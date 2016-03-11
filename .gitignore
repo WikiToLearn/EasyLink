@@ -1,0 +1,34 @@
+### Linux ###
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+### Editors ###
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*~
+*.kate-swp
+.*.swp
+sublime-*
+.project
+.settings
+\#*#
+.#*
+.idea
+
+# sftp configuration file
+sftp-config.json
+
+###Composer and vendor###
+/composer.phar
+/composer.lock
+/vendor/
