@@ -1,0 +1,28 @@
+{
+    "name":"EasyLink",
+    "version":"0.1.0",
+    "author":[
+        "Alessandro Tundo",
+        "Russell Greene"
+    ],
+    "url":"https://github.com/WikiToLearn/EasyLink",
+    "descriptionmsg":"",
+    "license-name":"GPLv3",
+    "type":"parserhook",
+    "AutoloadClasses":{
+        "EasyLink":"EasyLink.php",
+        "EasyLinkHooks":"EasyLinkHooks.php"
+    },
+    "MessagesDirs":{
+        "EasyLink":[
+            "i18n"
+        ]
+    },
+    "config":{
+
+    },
+    "Hooks":{
+
+    },
+    "manifest_version":1
+}
