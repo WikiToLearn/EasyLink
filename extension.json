@@ -1,27 +1,51 @@
-{
+{  
     "name":"EasyLink",
     "version":"0.1.0",
-    "author":[
-        "Alessandro Tundo",
-        "Russell Greene"
+    "author":[  
+        "Alessandro Tundo"
     ],
     "url":"https://github.com/WikiToLearn/EasyLink",
     "descriptionmsg":"",
     "license-name":"GPLv3",
     "type":"parserhook",
-    "AutoloadClasses":{
+    "AutoloadClasses":{  
         "EasyLink":"EasyLink.php",
         "EasyLinkHooks":"EasyLinkHooks.php"
     },
-    "MessagesDirs":{
-        "EasyLink":[
+    "MessagesDirs":{  
+        "EasyLink":[  
             "i18n"
         ]
     },
-    "config":{
+    "ResourceFileModulePaths": {
+        "localBasePath": "modules"
+    },
+    "ResourceModules": {
+        "ext.easyLink.visualEditor": {
+           "scripts":[  
+                "ve-easylink/ve.ui.easyLinkTool.js",
+                "ve-easylink/ve.ui.easyLinkDialog.js"
+            ],
+            "dependencies": [
+                "ext.visualEditor.mwcore"
+            ],
+            "messages": [
+                "easylink-ve-toolname",
+                "easylink-ve-dialog-title",
+                "easylink-ve-dialog-analyze",
+                "easylink-ve-dialog-input-label",
+                "easylink-ve-dialog-input-placeholder",
+                "easylink-ve-dialog-checkbox-label"
+            ]
+        }
+    },
+    "VisualEditorPluginModules": [
+        "ext.easyLink.visualEditor"
+    ],
+    "config":{  
 
     },
-    "Hooks":{
+    "Hooks":{  
 
     },
     "manifest_version":1

@@ -1,3 +1,7 @@
-{
-    "easylink-analyze-button" : "Analizza",
+{"easylink-ve-toolname" : "Easy Link",
+    "easylink-ve-dialog-title" : "Easy Link",
+    "easylink-ve-dialog-analyze" : "Analizza",
+    "easylink-ve-dialog-input-label" : "Etichetta",
+    "easylink-ve-dialog-input-placeholder" : "Un placeholder",
+    "easylink-ve-dialog-checkbox-label" : "Un checkbox"
 }
