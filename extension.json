@@ -24,7 +24,8 @@
         "ext.easyLink.visualEditor": {
            "scripts":[  
                 "ve-easylink/ve.ui.easyLinkTool.js",
-                "ve-easylink/ve.ui.easyLinkDialog.js"
+                "ve-easylink/ve.ui.easyLinkDialog.js",
+                "ve-easylink/resources/config.js"
             ],
             "dependencies": [
                 "ext.visualEditor.mwcore"

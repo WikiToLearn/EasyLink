@@ -27,12 +27,12 @@ var HTML = (function(){
 })();
 
 /* Send clean wikitext to BabelFy API and retrieve annotations */
-var analyze = function(){
+var analyze = function(response){
 var _lang = 'IT';
 var _key = apiKey.key;
 var _service_url = 'https://babelfy.io/v1/disambiguate';
 
-getCleanWikitext(function(cleanText){
+getCleanWikitext(function(cleanText, response){
   console.log("cleanText: " + cleanText);
   var _params = {
     'text'   : cleanText,
@@ -86,6 +86,8 @@ ve.ui.easyLinkDialog.prototype.getActionProcess  = function ( action ) {
   if ( action === 'analyze' ) {
     return new OO.ui.Process( function () {
     analyze();
+    this.actions.setMode('results');
+    this.stackLayout.setItem(this.panelResults);
   }, this );
   } else if (action === 'help') {
     this.actions.setMode('help');
@@ -93,7 +95,7 @@ ve.ui.easyLinkDialog.prototype.getActionProcess  = function ( action ) {
 this.stackLayout.setItem( this.panelHelp );
 
 } else if (action === 'back') {
-  this.actions.setMode('read');
+  this.actions.setMode('intro');
 //Show intro panel
 this.stackLayout.setItem( this.panelIntro );
 }
@@ -110,29 +112,32 @@ ve.ui.easyLinkDialog.static.name = 'easyLinkDialog';
 ve.ui.easyLinkDialog.static.title = OO.ui.deferMsg( 'easylink-ve-dialog-title' );
 ve.ui.easyLinkDialog.static.size = 'large';
 ve.ui.easyLinkDialog.static.actions = [
-{
-  'action': 'analyze',
-  'label': OO.ui.deferMsg( 'easylink-ve-dialog-analyze' ),
-  'flags': ['primary','constructive'],
-  'modes': 'read'
-},
-{
-  'label': OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
-  'flags': 'safe',
-  'modes': 'read'
-},
-{
-  'action': 'back',
-  'label': OO.ui.deferMsg( 'visualeditor-dialog-action-goback' ),
-  'flags': 'safe',
-  'modes': 'help'
-},
-{
-  'action': 'help',
-  'label': OO.ui.deferMsg( 'visualeditor-help-tool' ),
-  'modes': 'read',
-  'icon': 'help'
-}
+  {
+    'action': 'analyze',
+    'label': OO.ui.deferMsg( 'easylink-ve-dialog-analyze' ),
+    'flags': ['primary','constructive'],
+    'modes': 'intro',
+    'icon' : 'search'
+  },
+  {
+    'label': OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
+    'flags': 'safe',
+    'modes': 'intro',
+    'icon' : 'close'
+  },
+  {
+    'action': 'back',
+    'label': OO.ui.deferMsg( 'visualeditor-dialog-action-goback' ),
+    'flags': 'safe',
+    'modes': 'help',
+    'icon' : 'undo'
+  },
+  {
+    'action': 'help',
+    'label': OO.ui.deferMsg( 'visualeditor-help-tool' ),
+    'modes': 'intro',
+    'icon': 'help'
+  }
 ];
 
 /* Initialize the dialog elements */
@@ -141,6 +146,12 @@ ve.ui.easyLinkDialog.prototype.initialize = function () {
   //Define panels
   this.panelIntro = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
   this.panelHelp = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
+  this.panelResults = new OO.ui.PanelLayout({ 
+    '$': this.$,
+    'scrollable': true,
+    'padded': true,
+    'text' : 'eh proviamoci'
+  });
   //Define inputs fieldset
   this.inputsFieldset = new OO.ui.FieldsetLayout( {
     '$': this.$
@@ -176,7 +187,7 @@ ve.ui.easyLinkDialog.prototype.initialize = function () {
   this.panelHelp.$element.append('<p>This is an help text!</p>');
   //Add panels to the layout
   this.stackLayout= new OO.ui.StackLayout( {
-    items: [ this.panelIntro, this.panelHelp ]
+    items: [ this.panelIntro, this.panelHelp, this.panelResults ]
   } ); 
   this.$body.append( this.stackLayout.$element );
 };
@@ -185,7 +196,7 @@ ve.ui.easyLinkDialog.prototype.initialize = function () {
 ve.ui.easyLinkDialog.prototype.getSetupProcess = function ( data ) {
   return ve.ui.easyLinkDialog.super.prototype.getSetupProcess.call( this, data )
   .next( function () {
-    this.actions.setMode( 'read' );
+    this.actions.setMode( 'intro' );
   }, this );
 };
 
