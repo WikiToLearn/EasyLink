@@ -27,12 +27,12 @@ var HTML = (function(){
 })();
 
 /* Send clean wikitext to BabelFy API and retrieve annotations */
-var analyze = function(response){
+var analyze = function(callbackProva){
 var _lang = 'IT';
 var _key = apiKey.key;
 var _service_url = 'https://babelfy.io/v1/disambiguate';
 
-getCleanWikitext(function(cleanText, response){
+getCleanWikitext(function(cleanText){
   console.log("cleanText: " + cleanText);
   var _params = {
     'text'   : cleanText,
@@ -40,9 +40,13 @@ getCleanWikitext(function(cleanText, response){
     'key'  : _key
   };
 
-  $.getJSON(_service_url + "?", _params, function(response) {
+  $.post("http://it.tuttorotto.biz:8080/EasyLinkAPI/Test", {cleanText : cleanText}).done(function(response) {
+    callbackProva("OK");
+  });
 
-    $.each(response, function(key, val) {
+  /*$.getJSON(_service_url + "?", _params, function(response) {
+
+   /* $.each(response, function(key, val) {
 
         // retrieving token fragment
         var tokenFragment = val['tokenFragment'];
@@ -67,15 +71,16 @@ getCleanWikitext(function(cleanText, response){
         var id = "BabelNet Synset id: " + synsetId;
         console.log(id);
       });
-  });
+
+    callbackProva(response);
+  }); */ 
 });
 };
 
 /* Create a dialog */
 ve.ui.easyLinkDialog = function( manager, config ) {
-// Parent constructor
-ve.ui.easyLinkDialog.super.call( this, manager, config );
-
+  // Parent constructor
+  ve.ui.easyLinkDialog.super.call( this, manager, config );
 };
 
 /* Inheritance */
@@ -83,11 +88,41 @@ ve.ui.easyLinkDialog.super.call( this, manager, config );
 OO.inheritClass( ve.ui.easyLinkDialog, ve.ui.FragmentDialog );
 
 ve.ui.easyLinkDialog.prototype.getActionProcess  = function ( action ) {
+  var _this = this;
   if ( action === 'analyze' ) {
     return new OO.ui.Process( function () {
-    analyze();
-    this.actions.setMode('results');
-    this.stackLayout.setItem(this.panelResults);
+    analyze(function(results){
+      /*$.each(results, function(key, val) {
+
+        // retrieving token fragment
+        var tokenFragment = val['tokenFragment'];
+        var tfStart = tokenFragment['start'];
+        var tfEnd = tokenFragment['end'];
+
+        var tfragment = "Start token fragment: " + tfStart
+        + "<br/>" + "End token fragment: " + tfEnd;
+        console.log(tfragment);
+
+        // retrieving char fragment
+        var charFragment = val['charFragment'];
+        var cfStart = charFragment['start'];
+        var cfEnd = charFragment['end'];
+
+        var cfragment = "Start char fragment: " + cfStart
+        + "<br/>" + "End char fragment: " + cfEnd;
+        console.log(cfragment);
+
+        // retrieving BabelSynset ID
+        var synsetId = val['babelSynsetID'];
+        var id = "BabelNet Synset id: " + synsetId;
+        console.log(id);
+      });*/
+    if(results === 'OK'){
+      _this.panelResults.$element.append('<p>Test</p>');
+      _this.actions.setMode('results');
+      _this.stackLayout.setItem(_this.panelResults);
+    }
+    });
   }, this );
   } else if (action === 'help') {
     this.actions.setMode('help');
@@ -129,7 +164,7 @@ ve.ui.easyLinkDialog.static.actions = [
     'action': 'back',
     'label': OO.ui.deferMsg( 'visualeditor-dialog-action-goback' ),
     'flags': 'safe',
-    'modes': 'help',
+    'modes': ['help', 'results'],
     'icon' : 'undo'
   },
   {
@@ -198,6 +233,10 @@ ve.ui.easyLinkDialog.prototype.getSetupProcess = function ( data ) {
   .next( function () {
     this.actions.setMode( 'intro' );
   }, this );
+};
+
+ve.ui.easyLinkDialog.prototype.showResults = function (results){
+  var dialog = this;
 };
 
 /* Registration Dialog*/
