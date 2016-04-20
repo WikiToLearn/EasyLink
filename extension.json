@@ -25,9 +25,7 @@
            "scripts":[  
                 "ve-easylink/ve.ui.easyLinkTool.js",
                 "ve-easylink/ve.ui.easyLinkDialog.js",
-                "ve-easylink/resources/config.js",
-                "ve-easylink/resources/promise-7.0.4.min.js",
-                "ve-easylink/resources/promise-done-7.0.4.min.js"
+                "ve-easylink/resources/config.js"
             ],
             "dependencies": [
                 "ext.visualEditor.mwcore"
