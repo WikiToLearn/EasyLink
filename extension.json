@@ -10,12 +10,16 @@
     "type":"parserhook",
     "AutoloadClasses":{  
         "EasyLink":"EasyLink.php",
-        "EasyLinkHooks":"EasyLinkHooks.php"
+        "EasyLinkHooks":"EasyLinkHooks.php",
+        "SpecialEasyLink":"SpecialEasyLink.php"
     },
     "MessagesDirs":{  
         "EasyLink":[  
             "i18n"
         ]
+    },
+    "ExtensionMessagesFiles": {
+        "EasyLinkAlias": "EasyLink.alias.php"
     },
     "ResourceFileModulePaths": {
         "localBasePath": "modules"
@@ -31,12 +35,14 @@
                 "ext.visualEditor.mwcore"
             ],
             "messages": [
+                "easylink",
                 "easylink-ve-toolname",
                 "easylink-ve-dialog-title",
                 "easylink-ve-dialog-analyze",
-                "easylink-ve-dialog-input-label",
-                "easylink-ve-dialog-input-placeholder",
-                "easylink-ve-dialog-checkbox-label"
+                "easylink-ve-dialog-intro-text",
+                "easylink-ve-dialog-help-text",
+                "easylink-ve-dialog-progress-text",
+                "easylink-ve-dialog-gloss-source"
             ]
         }
     },
@@ -48,6 +54,9 @@
     },
     "Hooks":{  
 
+    },
+    "SpecialPages": {
+       "EasyLink":"SpecialEasyLink"
     },
     "manifest_version":1
 }

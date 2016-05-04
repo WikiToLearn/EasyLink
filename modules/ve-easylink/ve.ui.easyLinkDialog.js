@@ -1,14 +1,14 @@
-/* Remove math and dmath tags from wikitext*/
-function getCleanWikitext(callback){
+/* Get the Wikitext */
+function getWikitext(callback){
   var dom = ve.init.target.getSurface().getDom();
   ve.init.target.serialize(dom, function (wikitext) {
-    var noMath = wikitext.replace(/<math>.*<\/math>/g, '');
-    var cleanText = noMath.replace(/<dmath>\n*.*\n*<\/dmath>/g, '');
-    callback(cleanText);
+    //var noMath = wikitext.replace(/<math>.*<\/math>/g, '');
+    //var cleanText = noMath.replace(/<dmath>\n*.*\n*<\/dmath>/g, '');
+    callback(wikitext);
   });
 }
 
-/* Get HTML text or HTML with tags */
+/* Get HTML text or HTML with tags 
 var HTML = (function(){
   var getText = function(){
     var _DOMObj = ve.init.target.getSurface().getDom();
@@ -24,63 +24,22 @@ var HTML = (function(){
     getText : getText,
     getHTMLToString : getHTMLToString
   };
-})();
+})();*/
 
-/* Send clean wikitext to BabelFy API and retrieve annotations */
+/* Send Wikitext to EasyLinkAPI and retrieve annotations */
 var analyze = function(callbackProva){
-var _lang = 'IT';
-var _key = apiKey.key;
-var _service_url = 'https://babelfy.io/v1/disambiguate';
-
-getCleanWikitext(function(cleanText){
-  console.log("cleanText: " + cleanText);
-  var _params = {
-    'text'   : cleanText,
-    'lang' : _lang,
-    'key'  : _key
-  };
-
-  $.post("http://it.tuttorotto.biz:8080/EasyLinkAPI/Test", {cleanText : cleanText}).done(function(response) {
-    callbackProva("OK");
-  });
-
-  /*$.getJSON(_service_url + "?", _params, function(response) {
-
-   /* $.each(response, function(key, val) {
-
-        // retrieving token fragment
-        var tokenFragment = val['tokenFragment'];
-        var tfStart = tokenFragment['start'];
-        var tfEnd = tokenFragment['end'];
-
-        var tfragment = "Start token fragment: " + tfStart
-        + "<br/>" + "End token fragment: " + tfEnd;
-        console.log(tfragment);
-
-        // retrieving char fragment
-        var charFragment = val['charFragment'];
-        var cfStart = charFragment['start'];
-        var cfEnd = charFragment['end'];
-
-        var cfragment = "Start char fragment: " + cfStart
-        + "<br/>" + "End char fragment: " + cfEnd;
-        console.log(cfragment);
-
-        // retrieving BabelSynset ID
-        var synsetId = val['babelSynsetID'];
-        var id = "BabelNet Synset id: " + synsetId;
-        console.log(id);
-      });
-
-    callbackProva(response);
-  }); */ 
+  getWikitext(function(wikitext){
+  $.post("http://it.tuttorotto.biz/Special:EasyLink", {wikitext : wikitext}, function(response, status) {
+    if (status === "success") {
+      callbackProva(response);
+    }
+  }, "json");
 });
 };
-
 /* Create a dialog */
 ve.ui.easyLinkDialog = function( manager, config ) {
-  // Parent constructor
-  ve.ui.easyLinkDialog.super.call( this, manager, config );
+// Parent constructor
+ve.ui.easyLinkDialog.super.call( this, manager, config );
 };
 
 /* Inheritance */
@@ -88,44 +47,22 @@ ve.ui.easyLinkDialog = function( manager, config ) {
 OO.inheritClass( ve.ui.easyLinkDialog, ve.ui.FragmentDialog );
 
 ve.ui.easyLinkDialog.prototype.getActionProcess  = function ( action ) {
-  var _this = this;
+  var dialog = this;
   if ( action === 'analyze' ) {
-    return new OO.ui.Process( function () {
-    analyze(function(results){
-      /*$.each(results, function(key, val) {
-
-        // retrieving token fragment
-        var tokenFragment = val['tokenFragment'];
-        var tfStart = tokenFragment['start'];
-        var tfEnd = tokenFragment['end'];
-
-        var tfragment = "Start token fragment: " + tfStart
-        + "<br/>" + "End token fragment: " + tfEnd;
-        console.log(tfragment);
-
-        // retrieving char fragment
-        var charFragment = val['charFragment'];
-        var cfStart = charFragment['start'];
-        var cfEnd = charFragment['end'];
-
-        var cfragment = "Start char fragment: " + cfStart
-        + "<br/>" + "End char fragment: " + cfEnd;
-        console.log(cfragment);
-
-        // retrieving BabelSynset ID
-        var synsetId = val['babelSynsetID'];
-        var id = "BabelNet Synset id: " + synsetId;
-        console.log(id);
-      });*/
-    if(results === 'OK'){
-      _this.panelResults.$element.append('<p>Test</p>');
-      _this.actions.setMode('results');
-      _this.stackLayout.setItem(_this.panelResults);
-    }
+    dialog.fieldProgress.toggle(true);
+   return new OO.ui.Process( function () {
+     analyze(function(results){
+      if(results){
+        $.when(dialog.showResults(results)).done(function(){
+          dialog.fieldProgress.toggle(false);
+          dialog.actions.setMode('results');
+          dialog.stackLayout.setItem(dialog.panelResults);
+        });
+      }
     });
   }, this );
-  } else if (action === 'help') {
-    this.actions.setMode('help');
+} else if (action === 'help') {
+  this.actions.setMode('help');
 //Show help panel
 this.stackLayout.setItem( this.panelHelp );
 
@@ -139,7 +76,7 @@ return ve.ui.MWMediaDialog.super.prototype.getActionProcess.call( this, action )
 
 /* Set the body height */
 ve.ui.easyLinkDialog.prototype.getBodyHeight = function () {
-  return 200;
+  return 250;
 };
 
 /* Static Properties */
@@ -147,84 +84,62 @@ ve.ui.easyLinkDialog.static.name = 'easyLinkDialog';
 ve.ui.easyLinkDialog.static.title = OO.ui.deferMsg( 'easylink-ve-dialog-title' );
 ve.ui.easyLinkDialog.static.size = 'large';
 ve.ui.easyLinkDialog.static.actions = [
-  {
-    'action': 'analyze',
-    'label': OO.ui.deferMsg( 'easylink-ve-dialog-analyze' ),
-    'flags': ['primary','constructive'],
-    'modes': 'intro',
-    'icon' : 'search'
-  },
-  {
-    'label': OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
-    'flags': 'safe',
-    'modes': 'intro',
-    'icon' : 'close'
-  },
-  {
-    'action': 'back',
-    'label': OO.ui.deferMsg( 'visualeditor-dialog-action-goback' ),
-    'flags': 'safe',
-    'modes': ['help', 'results'],
-    'icon' : 'undo'
-  },
-  {
-    'action': 'help',
-    'label': OO.ui.deferMsg( 'visualeditor-help-tool' ),
-    'modes': 'intro',
-    'icon': 'help'
-  }
+{
+  'action': 'analyze',
+  'label': OO.ui.deferMsg( 'easylink-ve-dialog-analyze' ),
+  'flags': ['primary','constructive'],
+  'modes': 'intro',
+  'icon' : 'search'
+},
+{
+  'label': OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
+  'flags': 'safe',
+  'modes': 'intro',
+  'icon' : 'close'
+},
+{
+  'action': 'back',
+  'label': OO.ui.deferMsg( 'visualeditor-dialog-action-goback' ),
+  'flags': 'safe',
+  'modes': ['help', 'results'],
+  'icon' : 'undo'
+},
+{
+  'action': 'help',
+  'label': OO.ui.deferMsg( 'visualeditor-help-tool' ),
+  'modes': 'intro',
+  'icon': 'help'
+}
 ];
 
 /* Initialize the dialog elements */
 ve.ui.easyLinkDialog.prototype.initialize = function () {
   ve.ui.easyLinkDialog.super.prototype.initialize.call( this );
-  //Define panels
-  this.panelIntro = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
-  this.panelHelp = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
-  this.panelResults = new OO.ui.PanelLayout({ 
-    '$': this.$,
-    'scrollable': true,
-    'padded': true,
-    'text' : 'eh proviamoci'
-  });
-  //Define inputs fieldset
-  this.inputsFieldset = new OO.ui.FieldsetLayout( {
-    '$': this.$
-  } );
-  // input from
-  this.tryInput = new OO.ui.TextInputWidget(
-    { '$': this.$, 'multiline': false, 'placeholder': OO.ui.deferMsg( 'easylink-ve-dialog-input-placeholder' ) }
-    );
-  //Label from input
-  this.inputField= new OO.ui.FieldLayout( this.tryInput, {
-    '$': this.$,
-    'label': OO.ui.deferMsg( 'easylink-ve-dialog-input-label' )
-  } );
+//Define panels
+this.panelIntro = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
+this.panelHelp = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
+this.panelResults = new OO.ui.PanelLayout({ 
+  '$': this.$,
+  'scrollable': true,
+  'padded': true
+});
 
-  //Checkbox
-  this.tryCheckbox = new OO.ui.CheckboxInputWidget( {
-    '$': this.$
-  } );
+this.progressBar = new OO.ui.ProgressBarWidget();
+//this.progressBar.toggle(false);
+this.fieldProgress = new OO.ui.FieldsetLayout;
+this.fieldProgress.addItems( [
+   new OO.ui.FieldLayout( this.progressBar, {label: OO.ui.deferMsg( 'easylink-ve-dialog-progress-text' ), align: 'top'})
+] );
+this.fieldProgress.toggle(false);
 
-  //Label checkbox
-  var checkboxField= new OO.ui.FieldLayout( this.tryCheckbox, {
-    '$': this.$,
-    'align': 'inline',
-    'label': OO.ui.deferMsg( 'easylink-ve-dialog-checkbox-label' )
-  } );
-  //Add inputs to the fieldset
-  this.inputsFieldset.$element.append(
-    this.inputField.$element,
-    checkboxField.$element
-    );
-  //Add elements to the panels
-  this.panelIntro.$element.append( this.inputsFieldset.$element );
-  this.panelHelp.$element.append('<p>This is an help text!</p>');
-  //Add panels to the layout
-  this.stackLayout= new OO.ui.StackLayout( {
-    items: [ this.panelIntro, this.panelHelp, this.panelResults ]
-  } ); 
-  this.$body.append( this.stackLayout.$element );
+//Add elements to the panels
+this.panelIntro.$element.append(OO.ui.deferMsg( 'easylink-ve-dialog-intro-text' ),'<br><br>', this.fieldProgress.$element);
+this.panelHelp.$element.append(OO.ui.deferMsg( 'easylink-ve-dialog-help-text' ));
+//Add panels to the layout
+this.stackLayout= new OO.ui.StackLayout( {
+  items: [ this.panelIntro, this.panelHelp, this.panelResults ]
+} ); 
+this.$body.append( this.stackLayout.$element );
 };
 
 /* Set the default mode of the dialog */
@@ -237,6 +152,31 @@ ve.ui.easyLinkDialog.prototype.getSetupProcess = function ( data ) {
 
 ve.ui.easyLinkDialog.prototype.showResults = function (results){
   var dialog = this;
+  dialog.panelResults.$element.empty();
+  console.warn(results);
+  $.each(results, function(key, val) {
+    var babelLink = val['babelLink'];
+    var wikiLink = val['wikiLink'];
+    var gloss = val['gloss'];
+    var name = val['name'];
+    var glossSource = val['glossSource'];
+    //var entity = "<a href='" + babelLink + "'>" + name + "</a>: " + gloss + "<br>";
+    var popup = new OO.ui.PopupButtonWidget( {
+            label: name,
+            framed: false,
+            popup: {
+              head: true,
+              label: $('<p><strong>' + name + '</strong></p>'),
+              $content: $('<p>' + gloss + '</p><p>' + OO.ui.msg( 'easylink-ve-dialog-gloss-source' ) + glossSource + '</p>'),
+              $footer: $("<p><a target='_blank' href='" + babelLink + "'><img src='http://babelnet.org/imgs/babelnet.png'></a>"
+                + "<a target='_blank' href='" + wikiLink + "'><img src='http://image005.flaticon.com/28/png/16/33/33949.png'></a></p>"),
+              padded: true,
+              framed: true,
+              align: 'forwards'
+            }
+          } );
+    dialog.panelResults.$element.append(popup.$element, '<br>');
+  });
 };
 
 /* Registration Dialog*/
