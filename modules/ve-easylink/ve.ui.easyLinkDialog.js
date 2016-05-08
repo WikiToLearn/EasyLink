@@ -29,7 +29,7 @@ var HTML = (function(){
 /* Send Wikitext to EasyLinkAPI and retrieve annotations */
 var analyze = function(callbackProva){
   getWikitext(function(wikitext){
-  $.post("http://it.tuttorotto.biz/Special:EasyLink", {wikitext : wikitext}, function(response, status) {
+  $.post("/Special:EasyLink", {wikitext : wikitext}, function(response, status) {
     if (status === 'success' && response) {
       callbackProva(response);
     }
@@ -153,7 +153,7 @@ ve.ui.easyLinkDialog.prototype.getSetupProcess = function ( data ) {
 
 ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId){
   var dialog = this;
-  $.get("http://it.tuttorotto.biz/Special:EasyLink?id=" + requestId, function(response, status) {
+  $.get("/Special:EasyLink?id=" + requestId, function(response, status) {
     var responseObj = JSON.parse(response);
     if(responseObj.status === 'Progress' || response.status === 'Pending'){
       dialog.progressBar.setProgress(responseObj.progress);
@@ -169,7 +169,6 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId){
 ve.ui.easyLinkDialog.prototype.showResults = function (results){
   var dialog = this;
   dialog.panelResults.$element.empty();
-  console.warn(results);
   $.each(results, function(key, val) {
     var babelLink = val['babelLink'];
     var wikiLink = val['wikiLink'];
@@ -193,10 +192,9 @@ ve.ui.easyLinkDialog.prototype.showResults = function (results){
           } );
     dialog.panelResults.$element.append(popup.$element, '<br>');
   });
-
- dialog.fieldProgress.toggle(false);
-          dialog.actions.setMode('results');
-          dialog.stackLayout.setItem(dialog.panelResults);
+  dialog.fieldProgress.toggle(false);
+  dialog.actions.setMode('results');
+  dialog.stackLayout.setItem(dialog.panelResults);
 };
 
 /* Registration Dialog*/
