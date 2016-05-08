@@ -30,12 +30,13 @@ var HTML = (function(){
 var analyze = function(callbackProva){
   getWikitext(function(wikitext){
   $.post("http://it.tuttorotto.biz/Special:EasyLink", {wikitext : wikitext}, function(response, status) {
-    if (status === "success") {
+    if (status === 'success' && response) {
       callbackProva(response);
     }
-  }, "json");
+  });
 });
 };
+
 /* Create a dialog */
 ve.ui.easyLinkDialog = function( manager, config ) {
 // Parent constructor
@@ -53,11 +54,12 @@ ve.ui.easyLinkDialog.prototype.getActionProcess  = function ( action ) {
    return new OO.ui.Process( function () {
      analyze(function(results){
       if(results){
-        $.when(dialog.showResults(results)).done(function(){
+        dialog.pollingAPI(results);
+/*        $.when(dialog.showResults(results)).done(function(){
           dialog.fieldProgress.toggle(false);
           dialog.actions.setMode('results');
           dialog.stackLayout.setItem(dialog.panelResults);
-        });
+        });*/
       }
     });
   }, this );
@@ -124,8 +126,7 @@ this.panelResults = new OO.ui.PanelLayout({
   'padded': true
 });
 
-this.progressBar = new OO.ui.ProgressBarWidget();
-//this.progressBar.toggle(false);
+this.progressBar = new OO.ui.ProgressBarWidget({progress: 0});
 this.fieldProgress = new OO.ui.FieldsetLayout;
 this.fieldProgress.addItems( [
    new OO.ui.FieldLayout( this.progressBar, {label: OO.ui.deferMsg( 'easylink-ve-dialog-progress-text' ), align: 'top'})
@@ -149,6 +150,21 @@ ve.ui.easyLinkDialog.prototype.getSetupProcess = function ( data ) {
     this.actions.setMode( 'intro' );
   }, this );
 };
+
+ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId){
+  var dialog = this;
+  $.get("http://it.tuttorotto.biz/Special:EasyLink?id=" + requestId, function(response, status) {
+    var responseObj = JSON.parse(response);
+    if(responseObj.status === 'Progress' || response.status === 'Pending'){
+      dialog.progressBar.setProgress(responseObj.progress);
+      setTimeout(function() {
+        dialog.pollingAPI(responseObj.id);
+      }, (3 * 1000));
+    }else{
+      dialog.showResults(responseObj.results);
+    }
+  });
+}
 
 ve.ui.easyLinkDialog.prototype.showResults = function (results){
   var dialog = this;
@@ -177,6 +193,10 @@ ve.ui.easyLinkDialog.prototype.showResults = function (results){
           } );
     dialog.panelResults.$element.append(popup.$element, '<br>');
   });
+
+ dialog.fieldProgress.toggle(false);
+          dialog.actions.setMode('results');
+          dialog.stackLayout.setItem(dialog.panelResults);
 };
 
 /* Registration Dialog*/
