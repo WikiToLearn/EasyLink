@@ -162,6 +162,13 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId){
       }, (3 * 1000));
     }else{
       dialog.showResults(responseObj.results);
+      $.ajax({
+        url: '/Special:EasyLink?id=' + requestId,
+        type: 'DELETE',
+        success: function(result) {
+          //Do nothing
+        }
+      });
     }
   });
 }
@@ -191,6 +198,22 @@ ve.ui.easyLinkDialog.prototype.showResults = function (results){
             }
           } );
     dialog.panelResults.$element.append(popup.$element, '<br>');
+    var annotation = new ve.dm.easyLinkAnnotation( {
+        type: 'link/easyLink',
+        attributes: {
+            title: name,
+            gloss: gloss,
+            glossSource: glossSource,
+            babelLink: babelLink,
+            wikiLink: wikiLink
+        }
+    });
+    var veDmSurface = ve.init.target.getSurface().getModel();
+    var veDmDocument = veDmSurface.getDocument();
+
+  var range = veDmDocument.findText(name, {caseSensitiveString: true, wholeWord: true});
+  var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
+  veDmDocument.commit(transaction, false);
   });
   dialog.fieldProgress.toggle(false);
   dialog.actions.setMode('results');

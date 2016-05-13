@@ -26,13 +26,19 @@
     },
     "ResourceModules": {
         "ext.easyLink.visualEditor": {
-           "scripts":[  
-                "ve-easylink/ve.ui.easyLinkTool.js",
+           "scripts":[
+                "ve-easylink/ve.dm.easyLinkAnnotation.js",
+                "ve-easylink/ve.ce.easyLinkAnnotation.js",
+                "ve-easylink/ve.ui.easyLinkContextItem.js",
                 "ve-easylink/ve.ui.easyLinkDialog.js",
-                "ve-easylink/resources/config.js"
+                "ve-easylink/ve.ui.easyLinkTool.js"
             ],
             "dependencies": [
-                "ext.visualEditor.mwcore"
+                "ext.visualEditor.mwtransclusion",
+                "ext.visualEditor.mediawiki"
+            ],
+            "styles": [
+                "ve-easylink/styles/ve.easyLink.styles.css"
             ],
             "messages": [
                 "easylink",
