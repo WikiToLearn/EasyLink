@@ -1,7 +1,7 @@
 /* Get the Wikitext */
-function getWikitext(callback){
+function getWikitext(callback) {
   var dom = ve.init.target.getSurface().getDom();
-  ve.init.target.serialize(dom, function (wikitext) {
+  ve.init.target.serialize(dom, function(wikitext) {
     //var noMath = wikitext.replace(/<math>.*<\/math>/g, '');
     //var cleanText = noMath.replace(/<dmath>\n*.*\n*<\/dmath>/g, '');
     callback(wikitext);
@@ -26,141 +26,193 @@ var HTML = (function(){
   };
 })();*/
 
-/* Send Wikitext to EasyLinkAPI and retrieve annotations */
-var analyze = function(callbackProva){
-  getWikitext(function(wikitext){
-  $.post("/Special:EasyLink", {wikitext : wikitext}, function(response, status) {
-    if (status === 'success' && response) {
-      callbackProva(response);
-    }
-  });
-});
-};
+
 
 /* Create a dialog */
-ve.ui.easyLinkDialog = function( manager, config ) {
-// Parent constructor
-ve.ui.easyLinkDialog.super.call( this, manager, config );
+ve.ui.easyLinkDialog = function(manager, config) {
+  // Parent constructor
+  ve.ui.easyLinkDialog.parent.call(this, config);
 };
 
 /* Inheritance */
 
-OO.inheritClass( ve.ui.easyLinkDialog, ve.ui.FragmentDialog );
+OO.inheritClass(ve.ui.easyLinkDialog, OO.ui.ProcessDialog);
 
-ve.ui.easyLinkDialog.prototype.getActionProcess  = function ( action ) {
+ve.ui.easyLinkDialog.prototype.getActionProcess = function(action) {
   var dialog = this;
-  if ( action === 'analyze' ) {
-    dialog.fieldProgress.toggle(true);
-   return new OO.ui.Process( function () {
-     analyze(function(results){
-      if(results){
-        dialog.pollingAPI(results);
-/*        $.when(dialog.showResults(results)).done(function(){
-          dialog.fieldProgress.toggle(false);
-          dialog.actions.setMode('results');
-          dialog.stackLayout.setItem(dialog.panelResults);
-        });*/
-      }
-    });
-  }, this );
-} else if (action === 'help') {
-  this.actions.setMode('help');
-//Show help panel
-this.stackLayout.setItem( this.panelHelp );
+  if (action === 'analyze') {
+    dialog.layoutProgress.toggle(true);
+    return new OO.ui.Process(function() {
+      dialog.analyze(function(results) {
+        if (results) {
+          dialog.pollingAPI(results);
+          /*        $.when(dialog.showResults(results)).done(function(){
+                    dialog.fieldProgress.toggle(false);
+                    dialog.actions.setMode('results');
+                    dialog.stackLayout.setItem(dialog.panelResults);
+                  });*/
+        }
+      });
+    }, this);
+  } else if (action === 'help') {
+    this.actions.setMode('help');
+    //Show help panel
+    this.stackLayout.setItem(this.panelHelp);
 
-} else if (action === 'back') {
-  this.actions.setMode('intro');
-//Show intro panel
-this.stackLayout.setItem( this.panelIntro );
-}
-return ve.ui.MWMediaDialog.super.prototype.getActionProcess.call( this, action );
+  } else if (action === 'back') {
+    this.actions.setMode('intro');
+    //Show intro panel
+    this.stackLayout.setItem(this.panelIntro);
+  }
+  return ve.ui.easyLinkDialog.super.prototype.getActionProcess.call(this, action);
 };
 
 /* Set the body height */
-ve.ui.easyLinkDialog.prototype.getBodyHeight = function () {
-  return 250;
+ve.ui.easyLinkDialog.prototype.getBodyHeight = function() {
+  return 300;
 };
 
 /* Static Properties */
 ve.ui.easyLinkDialog.static.name = 'easyLinkDialog';
-ve.ui.easyLinkDialog.static.title = OO.ui.deferMsg( 'easylink-ve-dialog-title' );
+ve.ui.easyLinkDialog.static.title = OO.ui.deferMsg('easylink-ve-dialog-title');
 ve.ui.easyLinkDialog.static.size = 'large';
-ve.ui.easyLinkDialog.static.actions = [
-{
+ve.ui.easyLinkDialog.static.actions = [{
   'action': 'analyze',
-  'label': OO.ui.deferMsg( 'easylink-ve-dialog-analyze' ),
-  'flags': ['primary','constructive'],
+  'label': OO.ui.deferMsg('easylink-ve-dialog-analyze'),
+  'flags': ['primary', 'constructive'],
   'modes': 'intro',
-  'icon' : 'search'
-},
-{
-  'label': OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
+  'icon': 'search'
+}, {
+  'label': OO.ui.deferMsg('visualeditor-dialog-action-cancel'),
   'flags': 'safe',
   'modes': 'intro',
-  'icon' : 'close'
-},
-{
+  'icon': 'close'
+}, {
   'action': 'back',
-  'label': OO.ui.deferMsg( 'visualeditor-dialog-action-goback' ),
+  'label': OO.ui.deferMsg('visualeditor-dialog-action-goback'),
   'flags': 'safe',
   'modes': ['help', 'results'],
-  'icon' : 'undo'
-},
-{
+  'icon': 'undo'
+}, {
   'action': 'help',
-  'label': OO.ui.deferMsg( 'visualeditor-help-tool' ),
+  'label': OO.ui.deferMsg('visualeditor-help-tool'),
   'modes': 'intro',
   'icon': 'help'
-}
-];
+}];
 
 /* Initialize the dialog elements */
-ve.ui.easyLinkDialog.prototype.initialize = function () {
-  ve.ui.easyLinkDialog.super.prototype.initialize.call( this );
-//Define panels
-this.panelIntro = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
-this.panelHelp = new OO.ui.PanelLayout( { '$': this.$, 'scrollable': true, 'padded': true } );
-this.panelResults = new OO.ui.PanelLayout({ 
-  '$': this.$,
-  'scrollable': true,
-  'padded': true
-});
+ve.ui.easyLinkDialog.prototype.initialize = function() {
+  ve.ui.easyLinkDialog.parent.prototype.initialize.call(this);
+  //Define panels
+  this.panelIntro = new OO.ui.PanelLayout({
+    '$': this.$,
+    'scrollable': true,
+    'padded': true
+  });
+  this.panelHelp = new OO.ui.PanelLayout({
+    '$': this.$,
+    'scrollable': true,
+    'padded': true
+  });
+  this.panelResults = new OO.ui.PanelLayout({
+    '$': this.$,
+    'scrollable': true,
+    'padded': true
+  });
 
-this.progressBar = new OO.ui.ProgressBarWidget({progress: 0});
-this.fieldProgress = new OO.ui.FieldsetLayout;
-this.fieldProgress.addItems( [
-   new OO.ui.FieldLayout( this.progressBar, {label: OO.ui.deferMsg( 'easylink-ve-dialog-progress-text' ), align: 'top'})
-] );
-this.fieldProgress.toggle(false);
+  this.option1 = new OO.ui.ButtonOptionWidget( {
+    data: 'ALL',
+    label: OO.ui.deferMsg('easylink-ve-dialog-scored-select-all')
+} );
 
-//Add elements to the panels
-this.panelIntro.$element.append(OO.ui.deferMsg( 'easylink-ve-dialog-intro-text' ),'<br><br>', this.fieldProgress.$element);
-this.panelHelp.$element.append(OO.ui.deferMsg( 'easylink-ve-dialog-help-text' ));
-//Add panels to the layout
-this.stackLayout= new OO.ui.StackLayout( {
-  items: [ this.panelIntro, this.panelHelp, this.panelResults ]
-} ); 
-this.$body.append( this.stackLayout.$element );
+this.option2 = new OO.ui.ButtonOptionWidget( {
+    data: 'TOP',
+    label: OO.ui.deferMsg('easylink-ve-dialog-scored-select-top')
+} );
+
+this.buttonSelectWidget = new OO.ui.ButtonSelectWidget( {
+    items: [ this.option1, this.option2]
+  } );
+
+
+  this.layoutSelect = new OO.ui.FieldLayout(this.buttonSelectWidget,
+          {
+            align: 'top',
+            label: OO.ui.deferMsg('easylink-ve-dialog-scored-select')
+          }
+        );
+  this.numberInputWidget = new OO.ui.NumberInputWidget( { min: 0, max: 100, step: 5, isInteger: true,  input: { value: 0 }} );
+  this.layoutNumberInput =  new OO.ui.FieldLayout(this.numberInputWidget,{
+            align: 'top',
+            label: 'Coerenza (0 = non scelta):'
+  });
+
+  this.buttonSelectWidget.selectItem( this.option2 );
+
+  this.progressBar = new OO.ui.ProgressBarWidget({
+    progress: 0
+  });
+
+  this.layoutProgress = new OO.ui.FieldLayout(this.progressBar, {
+      label: OO.ui.deferMsg('easylink-ve-dialog-progress-text'),
+      align: 'top'
+    });
+  this.inputSetLayout = new OO.ui.FieldsetLayout;
+  this.inputSetLayout.addItems([
+    this.layoutSelect, this.layoutNumberInput
+  ]);
+
+  this.layoutProgress.toggle(false);
+
+  //Add elements to the panels
+  this.panelIntro.$element.append(OO.ui.deferMsg('easylink-ve-dialog-intro-text'), this.inputSetLayout.$element);
+  this.panelResults.$element.append(this.layoutProgress.$element);
+  this.panelHelp.$element.append(OO.ui.deferMsg('easylink-ve-dialog-help-text'));
+  //Add panels to the layout
+  this.stackLayout = new OO.ui.StackLayout({
+    items: [this.panelIntro, this.panelHelp, this.panelResults]
+  });
+  this.$body.append(this.stackLayout.$element);
 };
 
 /* Set the default mode of the dialog */
-ve.ui.easyLinkDialog.prototype.getSetupProcess = function ( data ) {
-  return ve.ui.easyLinkDialog.super.prototype.getSetupProcess.call( this, data )
-  .next( function () {
-    this.actions.setMode( 'intro' );
-  }, this );
+ve.ui.easyLinkDialog.prototype.getSetupProcess = function(data) {
+  return ve.ui.easyLinkDialog.super.prototype.getSetupProcess.call(this, data)
+    .next(function() {
+      this.actions.setMode('intro');
+    }, this);
 };
 
-ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId){
+/* Send Wikitext to EasyLinkAPI and retrieve annotations */
+ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
+  var dialog = this;
+  var scoredCandidates = dialog.buttonSelectWidget.getSelectedItem().data;
+  var threshold = dialog.numberInputWidget.getNumericValue();
+  getWikitext(function(wikitext) {
+    $.post("/Special:EasyLink", {
+      wikitext: wikitext,
+      scoredCandidates: scoredCandidates,
+      threshold: threshold
+    }, function(response, status) {
+      if (status === 'success' && response) {
+        callbackProva(response);
+      }
+    });
+  });
+  dialog.actions.setMode('results');
+  dialog.stackLayout.setItem(dialog.panelResults);
+};
+
+ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
   var dialog = this;
   $.get("/Special:EasyLink?id=" + requestId, function(response, status) {
     var responseObj = JSON.parse(response);
-    if(responseObj.status === 'Progress' || response.status === 'Pending'){
+    if (responseObj.status === 'Progress' || response.status === 'Pending') {
       dialog.progressBar.setProgress(responseObj.progress);
       setTimeout(function() {
         dialog.pollingAPI(responseObj.id);
-      }, (3 * 1000));
-    }else{
+      }, (2 * 1000));
+    } else {
       dialog.showResults(responseObj.results);
       $.ajax({
         url: '/Special:EasyLink?id=' + requestId,
@@ -173,52 +225,92 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId){
   });
 }
 
-ve.ui.easyLinkDialog.prototype.showResults = function (results){
+ve.ui.easyLinkDialog.prototype.showResults = function(results) {
   var dialog = this;
-  dialog.panelResults.$element.empty();
+  dialog.layoutProgress.toggle(false);
+  dialog.actions.setMode('results');
+  dialog.stackLayout.setItem(dialog.panelResults);
+  //dialog.panelResults.$element.empty();
   $.each(results, function(key, val) {
+    var id = val['id'];
     var babelLink = val['babelLink'];
     var wikiLink = val['wikiLink'];
     var gloss = val['gloss'];
-    var name = val['name'];
+    var title = val['title'];
     var glossSource = val['glossSource'];
-    //var entity = "<a href='" + babelLink + "'>" + name + "</a>: " + gloss + "<br>";
-    var popup = new OO.ui.PopupButtonWidget( {
-            label: name,
-            framed: false,
-            popup: {
-              head: true,
-              label: $('<p><strong>' + name + '</strong></p>'),
-              $content: $('<p>' + gloss + '</p><p>' + OO.ui.msg( 'easylink-ve-dialog-gloss-source' ) + glossSource + '</p>'),
-              $footer: $("<p><a target='_blank' href='" + babelLink + "'><img src='http://babelnet.org/imgs/babelnet.png'></a>"
-                + "<a target='_blank' href='" + wikiLink + "'><img src='http://image005.flaticon.com/28/png/16/33/33949.png'></a></p>"),
-              padded: true,
-              framed: true,
-              align: 'forwards'
-            }
-          } );
+    var popup = new OO.ui.PopupButtonWidget({
+      label: title,
+      framed: false,
+      popup: {
+        head: true,
+        label: $('<p><strong>' + title + '</strong></p>'),
+        $content: $('<p>' + gloss + '</p><p>' + OO.ui.msg('easylink-ve-dialog-gloss-source') + glossSource + '</p>'),
+        $footer: $("<p><a target='_blank' href='" + babelLink + "'><img src='http://babelnet.org/imgs/babelnet.png'></a>" + "<a target='_blank' href='" + wikiLink + "'><img src='http://image005.flaticon.com/28/png/16/33/33949.png'></a></p>"),
+        padded: true,
+        framed: true,
+        align: 'forwards'
+      }
+    });
     dialog.panelResults.$element.append(popup.$element, '<br>');
-    var annotation = new ve.dm.easyLinkAnnotation( {
-        type: 'link/easyLink',
-        attributes: {
-            title: name,
-            gloss: gloss,
-            glossSource: glossSource,
-            babelLink: babelLink,
-            wikiLink: wikiLink
-        }
+    var annotation = new ve.dm.easyLinkAnnotation({
+      type: 'link/easyLink',
+      attributes: {
+        id: id,
+        //class: 'easyLinkAnnotation',
+        title: title,
+        gloss: gloss,
+        glossSource: glossSource,
+        babelLink: babelLink,
+        wikiLink: wikiLink
+      }
     });
     var veDmSurface = ve.init.target.getSurface().getModel();
     var veDmDocument = veDmSurface.getDocument();
 
-  var range = veDmDocument.findText(name, {caseSensitiveString: true, wholeWord: true});
-  var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
-  veDmDocument.commit(transaction, false);
+    var range = veDmDocument.findText(title, {
+      //noOverlaps: true,
+      caseSensitiveString: true,
+      wholeWord: true
+    });
+    var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
+    veDmDocument.commit(transaction, false);
   });
-  dialog.fieldProgress.toggle(false);
+  var capsule = new OO.ui.FieldLayout(new OO.ui.CapsuleMultiSelectWidget({
+    selected: ['Option 1', 'Option 3'],
+    menu: {
+      items: [
+        new OO.ui.MenuOptionWidget({
+          data: 'Option 1',
+          label: 'Option One'
+        }),
+        new OO.ui.MenuOptionWidget({
+          data: 'Option 2',
+          label: 'Option Two'
+        }),
+        new OO.ui.MenuOptionWidget({
+          data: 'Option 3',
+          label: 'Option Three'
+        }),
+        new OO.ui.MenuOptionWidget({
+          data: 'Option 4',
+          label: 'Option Four'
+        }),
+        new OO.ui.MenuOptionWidget({
+          data: 'Option 5',
+          label: 'Option Five'
+        })
+      ]
+    }
+  }), {
+    label: 'Annotations',
+    align: 'top'
+  });
+  //dialog.panelResults.$element.append(capsule.$element, '<br>');
+  /*dialog.layoutProgress.toggle(false);
   dialog.actions.setMode('results');
-  dialog.stackLayout.setItem(dialog.panelResults);
+  dialog.stackLayout.setItem(dialog.panelResults);*/
+  //ve.init.target.getSurface().execute('window', 'open', 'easyLinkToolbarDialog');
 };
 
 /* Registration Dialog*/
-ve.ui.windowFactory.register( ve.ui.easyLinkDialog );
+ve.ui.windowFactory.register(ve.ui.easyLinkDialog);

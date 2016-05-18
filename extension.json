@@ -22,23 +22,27 @@
         "EasyLinkAlias": "EasyLink.alias.php"
     },
     "ResourceFileModulePaths": {
-        "localBasePath": "modules"
+        "localBasePath": ""
     },
     "ResourceModules": {
         "ext.easyLink.visualEditor": {
            "scripts":[
-                "ve-easylink/ve.dm.easyLinkAnnotation.js",
-                "ve-easylink/ve.ce.easyLinkAnnotation.js",
-                "ve-easylink/ve.ui.easyLinkContextItem.js",
-                "ve-easylink/ve.ui.easyLinkDialog.js",
-                "ve-easylink/ve.ui.easyLinkTool.js"
+                "modules/ve-easylink/ve.dm.easyLinkAnnotation.js",
+                "modules/ve-easylink/ve.ce.easyLinkAnnotation.js",
+                "modules/ve-easylink/ve.ui.easyLinkContextItem.js",
+                "modules/ve-easylink/ve.ui.easyLinkAnnotationInspector.js",
+                "modules/ve-easylink/ve.ui.easyLinkAnnotationWidget.js",
+                "modules/ve-easylink/ve.ui.easyLinkToolbarDialog.js",
+                "modules/ve-easylink/ve.ui.easyLinkDialog.js",
+                "modules/ve-easylink/ve.ui.easyLinkTool.js"
             ],
             "dependencies": [
                 "ext.visualEditor.mwtransclusion",
-                "ext.visualEditor.mediawiki"
+                "ext.visualEditor.mediawiki",
+                "oojs-ui"
             ],
             "styles": [
-                "ve-easylink/styles/ve.easyLink.styles.css"
+                "modules/ve-easylink/styles/ve.easyLink.styles.css"
             ],
             "messages": [
                 "easylink",
@@ -48,7 +52,10 @@
                 "easylink-ve-dialog-intro-text",
                 "easylink-ve-dialog-help-text",
                 "easylink-ve-dialog-progress-text",
-                "easylink-ve-dialog-gloss-source"
+                "easylink-ve-dialog-gloss-source",
+                "easylink-ve-dialog-scored-select",
+                "easylink-ve-dialog-scored-select-all",
+                "easylink-ve-dialog-scored-select-top"
             ]
         }
     },
@@ -58,8 +65,10 @@
     "config":{  
 
     },
-    "Hooks":{  
-
+    "Hooks":{
+        "ParserFirstCallInit": [
+            "EasyLinkHooks::onParserFirstCallSetup"
+        ]
     },
     "SpecialPages": {
        "EasyLink":"SpecialEasyLink"

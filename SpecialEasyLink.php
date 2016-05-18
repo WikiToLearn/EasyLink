@@ -9,7 +9,9 @@ class SpecialEasyLink extends SpecialPage {
         $request = $this->getRequest();
         if($method == 'POST'){
             $wikitext = $request->getVal( 'wikitext' );
-            $this->forwardPost($wikitext);
+            $scoredCandidates = $request->getVal('scoredCandidates');
+            $threshold = $request->getVal(threshold);
+            $this->forwardPost($wikitext, $scoredCandidates, $threshold);
         }else if($method == 'GET'){
             $requestId = $request->getVal( 'id' );
             $this->forwardGet($requestId);
@@ -19,8 +21,9 @@ class SpecialEasyLink extends SpecialPage {
         }  
     }
 
-    public function forwardPost($wikitext){
-        $params = ['wikitext' => $wikitext];
+    public function forwardPost($wikitext, $scoredCandidates, $threshold){
+        $params = ['wikitext' => $wikitext, 'scoredCandidates' => $scoredCandidates, 'threshold' => $threshold];
+
         // Get cURL resource
         $curl = curl_init();
         // Set some options - we are passing in a userAgent too here
