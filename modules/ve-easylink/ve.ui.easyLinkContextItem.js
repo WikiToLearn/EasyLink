@@ -70,6 +70,7 @@ ve.ui.easyLinkContextItem.static.clearable = true;
 
 /* Methods */
 
+/* Render body of the context item */
 ve.ui.easyLinkContextItem.prototype.renderBody = function() {
   this.$body.html(this.getDescription());
 };
@@ -96,14 +97,17 @@ ve.ui.easyLinkContextItem.prototype.onClearButtonClick = function() {
   });
 };
 
-///HACK!!!! I have to find out a better solution!!
+/**
+ * Handle edit button click events.
+ * Show the inspector and its widget
+ *
+ */
 ve.ui.easyLinkContextItem.prototype.onEditButtonClick = function() {
-  //this.context.popup.toggle();
   ve.init.target.getSurface().execute('window', 'open', 'link/easyLink');
 };
 
 /**
- * @inheritdoc
+ * Get description of the annotation from the model
  */
 ve.ui.easyLinkContextItem.prototype.getDescription = function() {
   var descriptionObj = ve.ce.easyLinkAnnotation.static.getDescription(this.model);

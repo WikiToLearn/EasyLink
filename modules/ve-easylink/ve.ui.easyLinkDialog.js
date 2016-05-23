@@ -38,6 +38,7 @@ ve.ui.easyLinkDialog = function(manager, config) {
 
 OO.inheritClass(ve.ui.easyLinkDialog, OO.ui.ProcessDialog);
 
+/* Define actions */
 ve.ui.easyLinkDialog.prototype.getActionProcess = function(action) {
   var dialog = this;
   if (action === 'analyze') {
@@ -103,7 +104,7 @@ ve.ui.easyLinkDialog.static.actions = [{
 /* Initialize the dialog elements */
 ve.ui.easyLinkDialog.prototype.initialize = function() {
   ve.ui.easyLinkDialog.parent.prototype.initialize.call(this);
-  //Define panels
+  /* Define panels */
   this.panelIntro = new OO.ui.PanelLayout({
     '$': this.$,
     'scrollable': true,
@@ -164,14 +165,15 @@ this.buttonSelectWidget = new OO.ui.ButtonSelectWidget( {
 
   this.layoutProgress.toggle(false);
 
-  //Add elements to the panels
+  /* Add elements to the panels */
   this.panelIntro.$element.append(OO.ui.deferMsg('easylink-ve-dialog-intro-text'), this.inputSetLayout.$element);
   this.panelResults.$element.append(this.layoutProgress.$element);
   this.panelHelp.$element.append(OO.ui.deferMsg('easylink-ve-dialog-help-text'));
-  //Add panels to the layout
+  /* Add panels to StackLayout */
   this.stackLayout = new OO.ui.StackLayout({
     items: [this.panelIntro, this.panelHelp, this.panelResults]
   });
+  /* Add StackLayout to dialog body */
   this.$body.append(this.stackLayout.$element);
 };
 
@@ -183,7 +185,7 @@ ve.ui.easyLinkDialog.prototype.getSetupProcess = function(data) {
     }, this);
 };
 
-/* Send Wikitext to EasyLinkAPI and retrieve annotations */
+/* Send Wikitext to EasyLinkAPI and get as response a request UUID to polling progress and results*/
 ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
   var dialog = this;
   var scoredCandidates = dialog.buttonSelectWidget.getSelectedItem().data;
@@ -203,6 +205,7 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
   dialog.stackLayout.setItem(dialog.panelResults);
 };
 
+/* Polling EasyLinkAPI with request UUID to get progress, status and results  */
 ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
   var dialog = this;
   $.get("/Special:EasyLink?id=" + requestId, function(response, status) {
@@ -225,6 +228,7 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
   });
 }
 
+/* Show results into results panel and annotate the model*/
 ve.ui.easyLinkDialog.prototype.showResults = function(results) {
   var dialog = this;
   dialog.layoutProgress.toggle(false);
@@ -234,7 +238,8 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
   $.each(results, function(key, val) {
     var id = val['id'];
     var babelLink = val['babelLink'];
-    var wikiLink = val['wikiLink'];
+    if(val['wikiLink'] !== null)
+      var wikiLink = val['wikiLink'];
     var gloss = val['gloss'];
     var title = val['title'];
     var glossSource = val['glossSource'];
@@ -274,36 +279,6 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
     });
     var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
     veDmDocument.commit(transaction, false);
-  });
-  var capsule = new OO.ui.FieldLayout(new OO.ui.CapsuleMultiSelectWidget({
-    selected: ['Option 1', 'Option 3'],
-    menu: {
-      items: [
-        new OO.ui.MenuOptionWidget({
-          data: 'Option 1',
-          label: 'Option One'
-        }),
-        new OO.ui.MenuOptionWidget({
-          data: 'Option 2',
-          label: 'Option Two'
-        }),
-        new OO.ui.MenuOptionWidget({
-          data: 'Option 3',
-          label: 'Option Three'
-        }),
-        new OO.ui.MenuOptionWidget({
-          data: 'Option 4',
-          label: 'Option Four'
-        }),
-        new OO.ui.MenuOptionWidget({
-          data: 'Option 5',
-          label: 'Option Five'
-        })
-      ]
-    }
-  }), {
-    label: 'Annotations',
-    align: 'top'
   });
   //dialog.panelResults.$element.append(capsule.$element, '<br>');
   /*dialog.layoutProgress.toggle(false);
