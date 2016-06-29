@@ -32,6 +32,7 @@ ve.ui.easyLinkAnnotationInspector.prototype.initialize = function () {
 
     // Properties
     this.annotationWidget = this.createAnnotationWidget(this.model);
+    this.annotationWidget.input.setValue("Qui dovrebbe esserci la definizione");
 
     // Initialization
     this.form.$element.append( this.annotationWidget.$element );

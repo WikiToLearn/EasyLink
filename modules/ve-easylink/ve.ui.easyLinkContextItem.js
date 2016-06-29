@@ -1,7 +1,7 @@
 /**
  *
  * @class
- * @extends ve.ui.AnnotationContextItem
+ * @extends ve.ui.LinearContextItem
  *
  * @param {ve.ui.Context} context Context item is in
  * @param {ve.dm.Model} model Model item is related to
@@ -100,10 +100,14 @@ ve.ui.easyLinkContextItem.prototype.onClearButtonClick = function() {
 /**
  * Handle edit button click events.
  * Show the inspector and its widget
- *
  */
 ve.ui.easyLinkContextItem.prototype.onEditButtonClick = function() {
   ve.init.target.getSurface().execute('window', 'open', 'link/easyLink');
+  /*var command = this.getCommand();
+	if ( command ) {
+		command.execute( this.context.getSurface() );
+		this.emit( 'command' );
+	}*/
 };
 
 /**
@@ -111,12 +115,12 @@ ve.ui.easyLinkContextItem.prototype.onEditButtonClick = function() {
  */
 ve.ui.easyLinkContextItem.prototype.getDescription = function() {
   var descriptionObj = ve.ce.easyLinkAnnotation.static.getDescription(this.model);
-  var description = "<p><strong>" 
-                    + descriptionObj.title.toUpperCase() 
-                    + ":</strong></p><p>" 
-                    + descriptionObj.gloss 
-                    + "</p><p>" 
-                    + OO.ui.msg('easylink-ve-dialog-gloss-source') 
+  var description = "<p><strong>"
+                    + descriptionObj.title.toUpperCase()
+                    + ":</strong></p><p>"
+                    + descriptionObj.gloss
+                    + "</p><p>"
+                    + OO.ui.msg('easylink-ve-dialog-gloss-source')
                     + descriptionObj.glossSource
                     + "</p>";
   return description;
@@ -134,6 +138,8 @@ ve.ui.easyLinkContextItem.prototype.applyToAnnotations = function(callback) {
     annotations = fragment.getAnnotations(true).filter(function(annotation) {
       return ve.isInstanceOfAny(annotation, modelClasses);
     }).get();
+    console.warn(annotations);
+    console.warn(fragment);
   if (!annotations.length &&
     fragment.getSelection().isCollapsed() &&
     fragment.getDocument().data.isContentOffset(fragment.getSelection().getRange().start)

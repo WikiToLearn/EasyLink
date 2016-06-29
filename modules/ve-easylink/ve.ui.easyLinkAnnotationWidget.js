@@ -21,22 +21,46 @@ ve.ui.easyLinkAnnotationWidget = function (config) {
 
     // Properties
     this.annotation = null;
+	  this.input = this.createInputWidget( config );
 
     // Parent constructor
     ve.ui.easyLinkAnnotationWidget.super.apply(this, arguments);
 
-    // Events
+    // Initialization
+    this.$element.addClass('ve-ui-easyLinkAnnotationWidget').append( this.input.$element );
 
-    this.$element.addClass('ve-ui-easyLinkAnnotationWidget').append("prova");
+    // Events
+	  //this.getTextInputWidget().connect( this, { change: 'onTextChange' } );
 };
 
 /* Inheritance */
 
 OO.inheritClass( ve.ui.easyLinkAnnotationWidget, OO.ui.Widget );
 
-/* Events */
-
 /* Methods */
+
+/**
+ * Handle value-changing events from the text input
+ *
+ * @method
+ */
+ve.ui.easyLinkAnnotationWidget.prototype.onTextChange = function ( value ) {
+	var isExt,
+		widget = this;
+
+	// RTL/LTR check
+	// TODO: Make this work properly
+	if ( $( 'body' ).hasClass( 'rtl' ) ) {
+		isExt = ve.init.platform.getExternalLinkUrlProtocolsRegExp().test( value.trim() );
+		// If URL is external, flip to LTR. Otherwise, set back to RTL
+		this.getTextInputWidget().setRTL( !isExt );
+	}
+
+	this.getTextInputWidget().isValid().done( function ( valid ) {
+		// Keep annotation in sync with value
+		widget.setAnnotation( valid ? widget.constructor.static.getAnnotationFromText( value ) : null, true );
+	} );
+};
 
 /**
  * Get a text value for the current annotation
@@ -44,7 +68,7 @@ OO.inheritClass( ve.ui.easyLinkAnnotationWidget, OO.ui.Widget );
  * @static
  * @param {ve.dm.easyLinkAnnotation|null} annotation easyLink annotation
  */
-ve.ui.LinkAnnotationWidget.static.getTextFromAnnotation = function ( annotation ) {
+ve.ui.easyLinkAnnotationWidget.static.getTextFromAnnotation = function ( annotation ) {
     return annotation ? annotation.getComparableObject() : '';
 };
 
@@ -61,6 +85,25 @@ ve.ui.easyLinkAnnotationWidget.prototype.setAnnotation = function (annotation){
 };
 
 /**
+ * Create a widget to be used by the annotation widget
+ *
+ * @param {Object} [config] Configuration options
+ * @return {OO.ui.Widget} Text input widget
+ */
+ve.ui.easyLinkAnnotationWidget.prototype.createInputWidget = function ( config ) {
+	return new OO.ui.TextInputWidget( $.extend( { validate: 'non-empty' }, config ) );
+};
+
+/**
+ * Get the text input widget used by the annotation widget
+ *
+ * @return {OO.ui.TextInputWidget} Text input widget
+ */
+ve.ui.easyLinkAnnotationWidget.prototype.getTextInputWidget = function () {
+	return this.input;
+};
+
+/**
  * Gets the annotation value.
  *
  * @method
@@ -68,4 +111,4 @@ ve.ui.easyLinkAnnotationWidget.prototype.setAnnotation = function (annotation){
  */
 ve.ui.easyLinkAnnotationWidget.prototype.getAnnotation = function () {
     return this.annotation;
-}; 
+};
