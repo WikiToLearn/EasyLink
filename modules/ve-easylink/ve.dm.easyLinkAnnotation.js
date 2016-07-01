@@ -21,19 +21,18 @@ ve.dm.easyLinkAnnotation.static.name = 'link/easyLink';
 
 ve.dm.easyLinkAnnotation.static.matchTagNames = ['span'];
 
-ve.dm.easyLinkAnnotation.static.matchRdfaTypes = ['mw:Extension/EasyLink'];
+ve.dm.easyLinkAnnotation.static.matchRdfaTypes = ['mw:extension/easylink'];
 
 ve.dm.easyLinkAnnotation.static.toDataElement = function(domElements) {
   var dialog = this;
-  $.get("/Special:EasyLink?annotations=yes", function(response, status) {
+  /*$.get("/Special:EasyLink?annotations=yes", function(response, status) {
     console.warn(response);
-  });
+  });*/
   return {
     type: this.name,
     attributes: {
       id: domElements[0].getAttribute('id'),
       title: domElements[0].getAttribute('data-title'),
-      //class: domElements[0].getAttribute('class'),
       gloss: domElements[0].getAttribute('data-gloss'),
       glossSource: domElements[0].getAttribute('data-gloss-source'),
       babelLink: domElements[0].getAttribute('data-babel-link'),
@@ -43,9 +42,8 @@ ve.dm.easyLinkAnnotation.static.toDataElement = function(domElements) {
 };
 
 ve.dm.easyLinkAnnotation.static.toDomElements = function(dataElement, doc) {
-  var domElement = doc.createElement('span');
+  var domElement = doc.createElement('easylink');
   domElement.setAttribute('id', this.getId(dataElement));
-  //domElement.setAttribute('class', this.getClass(dataElement));
   domElement.setAttribute('data-title', this.getTitle(dataElement));
   domElement.setAttribute('data-gloss', this.getGloss(dataElement));
   domElement.setAttribute('data-gloss-source', this.getGlossSource(dataElement));
@@ -118,7 +116,6 @@ ve.dm.easyLinkAnnotation.prototype.getComparableObject = function() {
   return {
     type: this.getType(),
     id: this.getAttribute('id'),
-    //class: this.getAttribute('class'),
     title: this.getAttribute('data-title'),
     gloss: this.getAttribute('data-gloss'),
     glossSource: this.getAttribute('data-gloss-source'),

@@ -15,7 +15,7 @@ ve.ce.easyLinkAnnotation = function() {
   // Initialization
   this.contentFragment = document.createDocumentFragment();
 
-  this.$element = $('<span>')
+  this.$element = $('<easylink>')
     .addClass('ve-ce-easyLinkAnnotation')
     .prop({
       id: this.constructor.static.getId(this.model)
