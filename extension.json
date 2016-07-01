@@ -1,20 +1,20 @@
-{  
+{
     "name":"EasyLink",
     "version":"0.1.0",
-    "author":[  
+    "author":[
         "Alessandro Tundo"
     ],
     "url":"https://github.com/WikiToLearn/EasyLink",
     "descriptionmsg":"",
     "license-name":"GPLv3",
     "type":"parserhook",
-    "AutoloadClasses":{  
+    "AutoloadClasses":{
         "EasyLink":"EasyLink.php",
         "EasyLinkHooks":"EasyLinkHooks.php",
         "SpecialEasyLink":"SpecialEasyLink.php"
     },
-    "MessagesDirs":{  
-        "EasyLink":[  
+    "MessagesDirs":{
+        "EasyLink":[
             "i18n"
         ]
     },
@@ -25,6 +25,11 @@
         "localBasePath": ""
     },
     "ResourceModules": {
+        "ext.easyLink":{
+          "scripts":[
+            "modules/js/index.js"
+          ]
+        },
         "ext.easyLink.visualEditor": {
            "scripts":[
                 "modules/ve-easylink/ve.dm.easyLinkAnnotation.js",
@@ -62,7 +67,7 @@
     "VisualEditorPluginModules": [
         "ext.easyLink.visualEditor"
     ],
-    "config":{  
+    "config":{
 
     },
     "Hooks":{

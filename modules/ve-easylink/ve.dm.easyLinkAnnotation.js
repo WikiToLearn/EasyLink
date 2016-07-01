@@ -21,6 +21,8 @@ ve.dm.easyLinkAnnotation.static.name = 'link/easyLink';
 
 ve.dm.easyLinkAnnotation.static.matchTagNames = ['span'];
 
+ve.dm.easyLinkAnnotation.static.matchRdfaTypes = ['mw:Extension/EasyLink'];
+
 ve.dm.easyLinkAnnotation.static.toDataElement = function(domElements) {
   var dialog = this;
   $.get("/Special:EasyLink?annotations=yes", function(response, status) {
