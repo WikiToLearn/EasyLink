@@ -23,7 +23,7 @@ class EasyLinkHooks{
     }
     $babelLink ='<a target="_blank" href="' .  $args['data-babel-link'] . '"><img src="http://babelnet.org/imgs/babelnet.png"></a>';
 
-    $output = '<span typeof="mw:extesion/easylink" role="button" class="btn btn-link" data-placement="auto bottom" data-html="true" id="'
+    $output = '<span role="button" class="btn btn-link" data-placement="auto bottom" data-html="true" id="'
     . $id . '" data-toggle="popover" data-trigger="focus" data-title ="<strong>'
     . $title . '</strong>" data-content="<p>'
     . $gloss . '</p><p>' . wfMessage( 'easylink-ve-dialog-gloss-source' )->inContentLanguage()
