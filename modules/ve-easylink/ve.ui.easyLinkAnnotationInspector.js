@@ -31,7 +31,7 @@ ve.ui.easyLinkAnnotationInspector.prototype.initialize = function () {
     ve.ui.easyLinkAnnotationInspector.super.prototype.initialize.call( this );
 
     // Properties
-    this.annotationWidget = this.createAnnotationWidget(this.model);
+    this.annotationWidget = this.createAnnotationWidget();
     this.annotationWidget.input.setValue("Qui dovrebbe esserci la definizione");
 
     // Initialization
@@ -43,8 +43,8 @@ ve.ui.easyLinkAnnotationInspector.prototype.initialize = function () {
  *
  * @return {ve.ui.easyLinkAnnotationWidget} Link annotation widget
  */
-ve.ui.easyLinkAnnotationInspector.prototype.createAnnotationWidget = function (model) {
-    return new ve.ui.easyLinkAnnotationWidget(model);
+ve.ui.easyLinkAnnotationInspector.prototype.createAnnotationWidget = function () {
+    return new ve.ui.easyLinkAnnotationWidget();
 };
 
 /**

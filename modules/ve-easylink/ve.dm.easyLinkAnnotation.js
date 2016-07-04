@@ -21,7 +21,11 @@ ve.dm.easyLinkAnnotation.static.name = 'link/easyLink';
 
 ve.dm.easyLinkAnnotation.static.matchTagNames = ['span'];
 
-ve.dm.easyLinkAnnotation.static.matchRdfaTypes = ['mw:Extension/easylink'];
+//ve.dm.easyLinkAnnotation.static.matchRdfaTypes = ['mw:Extension/easylink'];
+
+ve.dm.easyLinkAnnotation.static.matchFunction = function (domElement){
+  return domElement.getAttribute('typeof') === 'mw:Extension/easylink';
+};
 
 ve.dm.easyLinkAnnotation.static.toDataElement = function(domElements) {
   var dialog = this;
@@ -43,6 +47,7 @@ ve.dm.easyLinkAnnotation.static.toDataElement = function(domElements) {
 
 ve.dm.easyLinkAnnotation.static.toDomElements = function(dataElement, doc) {
   var domElement = doc.createElement('easylink');
+  //domElement.setAttribute('class', 'easylink')
   domElement.setAttribute('id', this.getId(dataElement));
   domElement.setAttribute('data-title', this.getTitle(dataElement));
   domElement.setAttribute('data-gloss', this.getGloss(dataElement));

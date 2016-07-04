@@ -43,7 +43,7 @@
             ],
             "dependencies": [
                 "ext.visualEditor.mwtransclusion",
-                "ext.visualEditor.mediawiki",
+                "ext.visualEditor.mwcore",
                 "oojs-ui"
             ],
             "styles": [
