@@ -15,12 +15,10 @@ ve.ce.easyLinkAnnotation = function() {
   // Initialization
   this.contentFragment = document.createDocumentFragment();
 
-  this.$element = $('<span>')
+  this.$element = $('<easylink>')
     .addClass('ve-ce-easyLinkAnnotation')
-    .prop({
-      id: this.constructor.static.getId(this.model)
-    })
     .attr({
+      'data-babelnet-id': this.constructor.static.getBabelnetId(this.model),
       'data-title': this.constructor.static.getTitle(this.model),
       'data-gloss': this.constructor.static.getGloss(this.model),
       'data-gloss-source': this.constructor.static.getGlossSource(this.model),
@@ -37,15 +35,15 @@ OO.inheritClass(ve.ce.easyLinkAnnotation, ve.ce.Annotation);
 
 ve.ce.easyLinkAnnotation.static.name = 'link/easyLink';
 
-ve.ce.easyLinkAnnotation.static.tagName = 'span';
+ve.ce.easyLinkAnnotation.static.tagName = 'easylink';
 
 /* Static Methods */
 
 /**
  * @inheritdoc
  */
-ve.ce.easyLinkAnnotation.static.getId = function(model) {
-  return model.getId();
+ve.ce.easyLinkAnnotation.static.getBabelnetId = function(model) {
+  return model.getBabelnetId();
 }
 ve.ce.easyLinkAnnotation.static.getTitle = function(model) {
   return model.getTitle();

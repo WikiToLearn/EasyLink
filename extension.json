@@ -28,22 +28,28 @@
         "ext.easyLink":{
           "scripts":[
             "modules/js/index.js"
-          ]
+          ],
+          "dependencies":[
+            "oojs-ui"
+          ],
+          "messages": [
+              "easylink-ve-dialog-gloss-source"
+            ]
         },
         "ext.easyLink.visualEditor": {
            "scripts":[
                 "modules/ve-easylink/ve.dm.easyLinkAnnotation.js",
                 "modules/ve-easylink/ve.ce.easyLinkAnnotation.js",
                 "modules/ve-easylink/ve.ui.easyLinkContextItem.js",
-                "modules/ve-easylink/ve.ui.easyLinkAnnotationInspector.js",
-                "modules/ve-easylink/ve.ui.easyLinkAnnotationWidget.js",
                 "modules/ve-easylink/ve.ui.easyLinkToolbarDialog.js",
                 "modules/ve-easylink/ve.ui.easyLinkDialog.js",
+                "modules/ve-easylink/ve.ui.easyLinkEditDialog.js",
                 "modules/ve-easylink/ve.ui.easyLinkTool.js"
             ],
             "dependencies": [
                 "ext.visualEditor.mwtransclusion",
                 "ext.visualEditor.mwcore",
+                "mediawiki.util",
                 "oojs-ui"
             ],
             "styles": [
@@ -73,6 +79,12 @@
     "Hooks":{
         "ParserFirstCallInit": [
             "EasyLinkHooks::onParserFirstCallSetup"
+        ],
+        "BeforeInitialize": [
+          "EasyLinkHooks::onBeforeInitialize"
+        ],
+        "BeforePageDisplay": [
+          "EasyLinkHooks::onBeforePageDisplay"
         ]
     },
     "SpecialPages": {

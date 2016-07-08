@@ -18,12 +18,13 @@
   // prevent this tool to be added to a catch-all group (*),
   //although this tool isn't added to a group
   ve.ui.easyLinkTool.static.autoAddToCatchall = false;
+  //ve.ui.easyLinkTool.static.commandName = 'EasyLinkToolbarDialog';
 
   /* onSelect is the handler for a click on the tool, open the dialog */
   ve.ui.easyLinkTool.prototype.onSelect = function() {
     this.toolbar.getSurface().execute('window', 'open', 'easyLinkDialog', null);
   };
-  
+
   ve.ui.easyLinkTool.prototype.onUpdateState = function() {
     this.setActive(false);
   };
@@ -31,7 +32,7 @@
   ve.ui.easyLinkTool.prototype.onSaveCompleted = function() {
       console.warn("Here I will have to store data");
   };
-  
+
   // Add this tool to the toolbar
   ve.init.mw.Target.static.toolbarGroups.push({
     // this will create a new toolgroup with the tools
