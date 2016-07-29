@@ -11,10 +11,13 @@ class SpecialEasyLink extends IncludableSpecialPage {
       $wikitext = $request->getVal( 'wikitext' );
       $scoredCandidates = $request->getVal('scoredCandidates');
       $threshold = $request->getVal('threshold');
-      $this->forwardPost($wikitext, $scoredCandidates, $threshold);
+      $babelDomain = $request->getVal('babelDomain');
+      $this->forwardPost($wikitext, $scoredCandidates, $threshold, $babelDomain);
     }elseif($method == 'POST' &&  $request->getVal( 'annotation' ) != null){
       $annotation = $request->getVal( 'annotation' );
-      $this->storeAnnotation($annotation);
+      $username = $request->getVal('username');
+      $pageName = $request->getVal('pageName');
+      $this->storeAnnotation($annotation, $username, $pageName);
     }else if($method == 'GET' &&  $request->getVal( 'id' ) != null){
       $requestId = $request->getVal( 'id' );
       $this->pollingAPI($requestId);
@@ -24,8 +27,8 @@ class SpecialEasyLink extends IncludableSpecialPage {
     }
   }
 
-  public static function forwardPost($wikitext, $scoredCandidates, $threshold){
-    $params = ['wikitext' => $wikitext, 'scoredCandidates' => $scoredCandidates, 'threshold' => $threshold];
+  public static function forwardPost($wikitext, $scoredCandidates, $threshold, $babelDomain){
+    $params = ['wikitext' => $wikitext, 'scoredCandidates' => $scoredCandidates, 'threshold' => $threshold, 'babelDomain' => $babelDomain];
 
     // Get cURL resource
     $curl = curl_init();
@@ -63,9 +66,21 @@ class SpecialEasyLink extends IncludableSpecialPage {
     return $response;
   }
 
-  public function storeAnnotation($annotation){
-    $params = ['annotation' => $annotation];
-
+  public function storeAnnotation($annotation, $username, $pageName){
+    /*$result = json_decode($annotation);
+    $params = [
+      'babelnetId' => $result->babelnetId
+      'title' => $result->title,
+      'gloss' => $result->gloss,
+      'glossSource' => $result->glossSource,
+      'wikiLink' => $result->wikiLink,
+      'babelLink' => $result->babelLink
+    ];*/
+    $params = [
+      'annotation' => $annotation,
+      'username' => $username,
+      'pageName' => $pageName
+    ];
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a userAgent too here

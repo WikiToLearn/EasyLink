@@ -27,6 +27,10 @@
 
   ve.ui.easyLinkTool.prototype.onUpdateState = function() {
     this.setActive(false);
+    var surfaceModel = ve.init.target.getSurface().getModel();
+    var selection = surfaceModel.getSelection();
+    this.setDisabled(!selection instanceof ve.dm.LinearSelection);
+
   };
 
   ve.ui.easyLinkTool.prototype.onSaveCompleted = function() {

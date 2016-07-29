@@ -15,7 +15,7 @@ ve.ce.easyLinkAnnotation = function() {
   // Initialization
   this.contentFragment = document.createDocumentFragment();
 
-  this.$element = $('<easylink>')
+  this.$element = $('<span>')
     .addClass('ve-ce-easyLinkAnnotation')
     .attr({
       'data-babelnet-id': this.constructor.static.getBabelnetId(this.model),
@@ -35,7 +35,7 @@ OO.inheritClass(ve.ce.easyLinkAnnotation, ve.ce.Annotation);
 
 ve.ce.easyLinkAnnotation.static.name = 'link/easyLink';
 
-ve.ce.easyLinkAnnotation.static.tagName = 'easylink';
+ve.ce.easyLinkAnnotation.static.tagName = 'span';
 
 /* Static Methods */
 
@@ -68,7 +68,9 @@ ve.ce.easyLinkAnnotation.static.getDescription = function(model) {
   return {
     title: ve.ce.easyLinkAnnotation.static.getTitle(model),
     gloss: ve.ce.easyLinkAnnotation.static.getGloss(model),
-    glossSource: ve.ce.easyLinkAnnotation.static.getGlossSource(model)
+    glossSource: ve.ce.easyLinkAnnotation.static.getGlossSource(model),
+    babelLink: ve.ce.easyLinkAnnotation.static.getBabelLink(model),
+    wikiLink: ve.ce.easyLinkAnnotation.static.getWikiLink(model)
   };
 }
 

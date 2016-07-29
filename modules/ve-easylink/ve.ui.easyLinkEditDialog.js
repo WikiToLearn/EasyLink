@@ -5,7 +5,9 @@ ve.ui.easyLinkEditDialog = function(fragment, annotation, config) {
   this.annotation = annotation;
   this.fragment = fragment;
   this.inputWidget = this.createInputWidget();
-  this.inputWidget.setValue(annotation.getGloss());
+  this.textareaWidget = this.createTextareaWidget();
+  this.inputWidget.setValue(annotation.getWikiLink());
+  this.textareaWidget.setValue(annotation.getGloss());
 };
 
 /* Inheritance */
@@ -34,7 +36,8 @@ ve.ui.easyLinkEditDialog.prototype.getActionProcess = function(action) {
   var dialogEdit = this;
   if (action === 'save') {
     return new OO.ui.Process(function() {
-      var newGloss = dialogEdit.inputWidget.getValue();
+      var newGloss = dialogEdit.textareaWidget.getValue();
+      var newWikiLink = dialogEdit.inputWidget.getValue();
       var newAnnotation = new ve.dm.easyLinkAnnotation({
         type: 'link/easyLink',
         attributes: {
@@ -43,7 +46,7 @@ ve.ui.easyLinkEditDialog.prototype.getActionProcess = function(action) {
           gloss: newGloss,
           glossSource: 'WikiToLearn',
           babelLink: dialogEdit.annotation.getBabelLink(),
-          wikiLink: dialogEdit.annotation.getWikiLink()
+          wikiLink: newWikiLink
         }
       });
       dialogEdit.fragment.annotateContent('clear', dialogEdit.annotation);
@@ -56,7 +59,7 @@ return ve.ui.easyLinkEditDialog.super.prototype.getActionProcess.call(this, acti
 
 /* Set the body height */
 ve.ui.easyLinkEditDialog.prototype.getBodyHeight = function() {
-  return 150;
+  return 250;
 };
 
 /* Initialize the dialog elements */
@@ -75,7 +78,9 @@ ve.ui.easyLinkEditDialog.prototype.initialize = function() {
   ]);
 
   /* Add elements to the panels */
-  this.panelEdit.$element.append('<p>Edit the definition: </p><br>', this.inputSetLayout.$element);
+  this.panelEdit.$element.append('<p>Edit the definition: </p>', this.textareaWidget.$element,
+  "<br><p>Edit the link: </p>", this.inputSetLayout.$element
+  );
   /* Add panels to StackLayout */
   this.stackLayout = new OO.ui.StackLayout({
     items: [this.panelEdit]
@@ -93,13 +98,23 @@ ve.ui.easyLinkEditDialog.prototype.getSetupProcess = function(data) {
 };
 
 /**
- * Create a widget to be used by the annotation widget
+ * Create a inputext to be used by the edit dialog widget
  *
  * @param {Object} [config] Configuration options
  * @return {OO.ui.Widget} Text input widget
  */
 ve.ui.easyLinkEditDialog.prototype.createInputWidget = function ( config ) {
 	return new OO.ui.TextInputWidget( $.extend( { validate: 'non-empty' }, config ) );
+};
+
+/**
+ * Create a textarea to be used by the edit dialog widget
+ *
+ * @param {Object} [config] Configuration options
+ * @return {OO.ui.Widget} Text input widget
+ */
+ve.ui.easyLinkEditDialog.prototype.createTextareaWidget = function ( config ) {
+	return new OO.ui.TextInputWidget( $.extend( { validate: 'non-empty', multiline: true, rows: 5 }, config ) );
 };
 
 /* Registration Dialog*/

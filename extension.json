@@ -44,7 +44,8 @@
                 "modules/ve-easylink/ve.ui.easyLinkToolbarDialog.js",
                 "modules/ve-easylink/ve.ui.easyLinkDialog.js",
                 "modules/ve-easylink/ve.ui.easyLinkEditDialog.js",
-                "modules/ve-easylink/ve.ui.easyLinkTool.js"
+                "modules/ve-easylink/ve.ui.easyLinkTool.js",
+                "modules/ve-easylink/resources/config.js"
             ],
             "dependencies": [
                 "ext.visualEditor.mwtransclusion",
@@ -79,9 +80,6 @@
     "Hooks":{
         "ParserFirstCallInit": [
             "EasyLinkHooks::onParserFirstCallSetup"
-        ],
-        "BeforeInitialize": [
-          "EasyLinkHooks::onBeforeInitialize"
         ],
         "BeforePageDisplay": [
           "EasyLinkHooks::onBeforePageDisplay"

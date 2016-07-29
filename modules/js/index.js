@@ -1,5 +1,5 @@
 $(function () {
-  var annotations = document.getElementsByTagName('easylink');
+  var annotations = $("span[class='easylink']");
   var popups = [];
   $.each(annotations, function(key, value){
     var popup = new OO.ui.PopupButtonWidget({

@@ -69,7 +69,7 @@ return ve.ui.easyLinkDialog.super.prototype.getActionProcess.call(this, action);
 
 /* Set the body height */
 ve.ui.easyLinkDialog.prototype.getBodyHeight = function() {
-  return 300;
+  return 400;
 };
 
 /* Static Properties */
@@ -134,7 +134,22 @@ ve.ui.easyLinkDialog.prototype.initialize = function() {
     items: [ this.option1, this.option2]
   } );
 
+  var domainKeys = Object.keys(babelDomains);
+  var items = [];
+  for(i=0; i<domainKeys.length;i++){
+    items.push(new OO.ui.MenuOptionWidget( {
+        data: domainKeys[i],
+        label: babelDomains[domainKeys[i]],
+    } ));
+  }
 
+  this.selectDomains = new OO.ui.DropdownWidget( {
+    label: 'Seleziona un dominio (opzionale)',
+    menu: {
+      items: items
+    }
+  } );
+  this.selectDomains.getMenu().selectItemByData( 'ALL' );
   this.layoutSelect = new OO.ui.FieldLayout(this.buttonSelectWidget,
     {
       align: 'top',
@@ -165,7 +180,7 @@ ve.ui.easyLinkDialog.prototype.initialize = function() {
   this.layoutProgress.toggle(false);
 
   /* Add elements to the panels */
-  this.panelIntro.$element.append(OO.ui.deferMsg('easylink-ve-dialog-intro-text'), this.inputSetLayout.$element);
+  this.panelIntro.$element.append(OO.ui.deferMsg('easylink-ve-dialog-intro-text'), this.inputSetLayout.$element, this.selectDomains.$element);
   this.panelResults.$element.append(this.layoutProgress.$element);
   this.panelHelp.$element.append(OO.ui.deferMsg('easylink-ve-dialog-help-text'));
   /* Add panels to StackLayout */
@@ -189,11 +204,14 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
   var dialog = this;
   var scoredCandidates = dialog.buttonSelectWidget.getSelectedItem().data;
   var threshold = dialog.numberInputWidget.getNumericValue();
+  var babelDomain = dialog.selectDomains.getMenu().getSelectedItem().getData();
+  console.warn(threshold);
   getWikitext(function(wikitext) {
     $.post("/Special:EasyLink", {
       wikitext: wikitext,
       scoredCandidates: scoredCandidates,
-      threshold: threshold
+      threshold: threshold,
+      babelDomain: babelDomain
     }, function(response, status) {
       if (status === 'success' && response) {
         callbackProva(response);
@@ -231,31 +249,19 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
 ve.ui.easyLinkDialog.prototype.showResults = function(results) {
   var dialog = this;
   dialog.layoutProgress.toggle(false);
-  dialog.actions.setMode('results');
-  dialog.stackLayout.setItem(dialog.panelResults);
-  //dialog.panelResults.$element.empty();
+
+  ve.dm.easyLinkAnnotation.static.annotationsList = [];
+
   $.each(results, function(key, val) {
     var babelnetId = val['id'];
     var babelLink = val['babelLink'];
-    if(val['wikiLink'] !== null)
-    var wikiLink = val['wikiLink'];
+    if(val['wikiLink'] !== null){
+      var wikiLink = val['wikiLink'];
+    }
     var gloss = val['gloss'];
     var title = val['title'];
     var glossSource = val['glossSource'];
-    var popup = new OO.ui.PopupButtonWidget({
-      label: title,
-      framed: false,
-      popup: {
-        head: true,
-        label: $('<p><strong>' + title + '</strong></p>'),
-        $content: $('<p>' + gloss + '</p><p>' + OO.ui.msg('easylink-ve-dialog-gloss-source') + glossSource + '</p>'),
-        $footer: $("<p><a target='_blank' href='" + babelLink + "'><img src='http://babelnet.org/imgs/babelnet.png'></a>" + "<a target='_blank' href='" + wikiLink + "'><img src='http://image005.flaticon.com/28/png/16/33/33949.png'></a></p>"),
-        padded: true,
-        framed: true,
-        align: 'forwards'
-      }
-    });
-    dialog.panelResults.$element.append(popup.$element, '<br>');
+
     var annotation = new ve.dm.easyLinkAnnotation({
       type: 'link/easyLink',
       attributes: {
@@ -275,15 +281,17 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
       caseSensitiveString: true,
       wholeWord: true
     });
-
-    var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
-    veDmDocument.commit(transaction, false);
-    ve.dm.easyLinkAnnotation.static.annotationsList.push(annotation);
+    if(range.length > 0){
+      var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
+      veDmDocument.commit(transaction, true);
+      ve.dm.easyLinkAnnotation.static.annotationsList.push(annotation);  
+    }
   });
-  //dialog.panelResults.$element.append(capsule.$element, '<br>');
-  /*dialog.layoutProgress.toggle(false);
-  dialog.actions.setMode('results');
-  dialog.stackLayout.setItem(dialog.panelResults);*/
+  dialog.close();
+  dialog.progressBar.setProgress("0");
+  dialog.actions.setMode('intro');
+  dialog.stackLayout.setItem(dialog.panelIntro);
+  ve.init.target.getSurface().execute('window', 'close', 'easyLinkToolbarDialog');
   ve.init.target.getSurface().execute('window', 'open', 'easyLinkToolbarDialog');
 };
 

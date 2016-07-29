@@ -24,8 +24,6 @@ ve.ui.easyLinkToolbarDialog.static.name = 'easyLinkToolbarDialog';
 
 ve.ui.easyLinkToolbarDialog.static.size = 'full';
 
-ve.ui.easyLinkToolbarDialog.static.padded = false;
-
 ve.ui.easyLinkToolbarDialog.static.modelClasses = [ve.dm.easyLinkAnnotation];
 
 /* Methods */
@@ -41,58 +39,60 @@ ve.ui.easyLinkToolbarDialog.prototype.getBodyHeight = function() {
 ve.ui.easyLinkToolbarDialog.prototype.initialize = function () {
 // Parent method
 ve.ui.easyLinkToolbarDialog.super.prototype.initialize.call( this );
-/*this.capsule = new OO.ui.FieldLayout( new OO.ui.CapsuleMultiSelectWidget( {
-    selected: [ 'Option 1', 'Option 3' ],
-    menu: {
-        items: [
-        new OO.ui.MenuOptionWidget( {
-            data: 'Option 1',
-            label: 'Option One'
-        } ),
-        new OO.ui.MenuOptionWidget( {
-            data: 'Option 2',
-            label: 'Option Two'
-        } ),
-        new OO.ui.MenuOptionWidget( {
-            data: 'Option 3',
-            label: 'Option Three'
-        } ),
-        new OO.ui.MenuOptionWidget( {
-            data: 'Option 4',
-            label: 'Option Four'
-        } ),
-        new OO.ui.MenuOptionWidget( {
-            data: 'Option 5',
-            label: 'Option Five'
-        } )
-        ]
-    }
-} ),{
-    label: 'Annotations',
-    align: 'top'
-}
-);
-this.$body.append( this.capsule.$element );*/
 
-this.clearAllButton = new OO.ui.ButtonWidget({
-	label: 'Remove all',
-	icon: 'remove',
-	iconTitle: 'Remove all',
-	flags: ['destructive']
-});
-this.confirmAllButton = new OO.ui.ButtonWidget({
-	label: 'Confirm all',
-	icon: 'check',
-	iconTitle: 'Confirm all',
-	flags: ['constructive']
-});
-this.$body.append( '<p>Clicca qui per rimuovere o aggiungere definitivamente tutte le annotazioni</p><br>',this.clearAllButton.$element, this.confirmAllButton.$element );
-this.clearAllButton.connect(this, {
-	click: 'onClearAllButtonClick'
-});
-this.confirmAllButton.connect(this, {
-	click: 'onConfirmAllButtonClick'
-});
+  this.clearAllButton = new OO.ui.ButtonWidget({
+  	label: 'Remove all',
+  	icon: 'remove',
+  	iconTitle: 'Remove all',
+  	flags: ['destructive']
+  });
+  this.confirmAllButton = new OO.ui.ButtonWidget({
+  	label: 'Confirm all',
+  	icon: 'check',
+  	iconTitle: 'Confirm all',
+  	flags: ['constructive']
+  });
+
+  this.panel = new OO.ui.PanelLayout({
+    '$': this.$,
+    'scrollable': true,
+    'padded': false
+  });
+  var myStack = new OO.ui.StackLayout( {
+      items: [this.panel
+          ]
+  } );
+  this.results = $( '<p>' ).addClass( 'results' );
+  this.panel.$element.append('<h3>Results: </h3>', this.results);
+  this.panel.$element.append('<br>', this.clearAllButton.$element, this.confirmAllButton.$element);
+  this.$body.append(myStack.$element);
+
+  this.clearAllButton.connect(this, {
+  	click: 'onClearAllButtonClick'
+  });
+  this.confirmAllButton.connect(this, {
+  	click: 'onConfirmAllButtonClick'
+  });
+};
+
+ve.ui.easyLinkToolbarDialog.prototype.getActionProcess = function ( action ) {
+	return new OO.ui.Process( function () {
+		this.close( { action: action } );
+	}, this );
+};
+
+ve.ui.easyLinkToolbarDialog.prototype.getSetupProcess = function(data){
+  data = data || {};
+  return ve.ui.easyLinkToolbarDialog.super.prototype.getSetupProcess.call( this, data )
+		.next( function () {
+      this.results.empty();
+      var annotations = ve.dm.easyLinkAnnotation.static.annotationsList;
+      var results = this.results;
+      $.each(annotations, function(key, annotation){
+        var result = '<strong>' + annotation.getTitle() + '</strong> ';
+        results.append(result);
+      });
+		}, this );
 };
 
 /**
@@ -101,7 +101,9 @@ this.confirmAllButton.connect(this, {
 ve.ui.easyLinkToolbarDialog.prototype.onClearAllButtonClick = function() {
   var annotations = ve.dm.easyLinkAnnotation.static.annotationsList;
   this.removeAll(annotations);
+  ve.init.target.getSurface().execute('window', 'close', 'easyLinkToolbarDialog');
 };
+
 
 /**
  * Handle confirm all button click events.

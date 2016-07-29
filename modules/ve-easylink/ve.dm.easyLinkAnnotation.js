@@ -20,7 +20,7 @@ OO.inheritClass(ve.dm.easyLinkAnnotation, ve.dm.Annotation);
 ve.dm.easyLinkAnnotation.static.name = 'link/easyLink';
 ve.dm.easyLinkAnnotation.static.class = 've-dm-easyLinkAnnotation';
 
-ve.dm.easyLinkAnnotation.static.matchTagNames = ['easylink'];
+ve.dm.easyLinkAnnotation.static.matchTagNames = ['span'];
 
 ve.dm.easyLinkAnnotation.static.annotationsList = [];
 

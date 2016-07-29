@@ -133,8 +133,10 @@ ve.ui.easyLinkContextItem.prototype.isEditable = function() {
 * Removes any modelClasses annotations from the current fragment
 */
 ve.ui.easyLinkContextItem.prototype.onClearButtonClick = function() {
+  var annotations = ve.dm.easyLinkAnnotation.static.annotationsList;
   this.applyToAnnotations(function(fragment, annotation) {
     fragment.annotateContent('clear', annotation);
+    annotations.splice(annotations.indexOf(annotation));
   });
 };
 
@@ -151,7 +153,6 @@ ve.ui.easyLinkContextItem.prototype.onEditButtonClick = function() {
   });
 };
 
-
 /**
 * Handle add button click events.
 * Add this annotation to service's database
@@ -161,8 +162,12 @@ ve.ui.easyLinkContextItem.prototype.onAddButtonClick = function() {
   this.applyToAnnotations(function(fragment, annotation) {
     var attributes = annotation.getAttributes();
     var jsonToSend = JSON.stringify(attributes);
+    var pageName = mw.config.get('wgPageName');
+    var username = mw.config.get('wgUserName');
     $.post("/Special:EasyLink", {
-      annotation : jsonToSend
+      annotation : jsonToSend,
+      username : username,
+      pageName: pageName
     }, function(response, status) {
       if (status === 'success' && response) {
         alert("Stored!");
@@ -183,7 +188,12 @@ ve.ui.easyLinkContextItem.prototype.getDescription = function() {
   + "</p><p>"
   + OO.ui.msg('easylink-ve-dialog-gloss-source')
   + descriptionObj.glossSource
-  + "</p>";
+  + "</p><p>"
+  + "<a target='_blank' href='"
+  + descriptionObj.babelLink
+  + "'><img src='http://babelnet.org/imgs/babelnet.png'></a>"
+  + "<a target='_blank' href='"
+  + descriptionObj.wikiLink + "'><img src='http://image005.flaticon.com/28/png/16/33/33949.png'></a></p>";
   return description;
 };
 
