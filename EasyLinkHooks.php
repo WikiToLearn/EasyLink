@@ -42,8 +42,7 @@ static function easyLinkRender( $input, array $args, Parser $parser, PPFrame $fr
       break;
     }
   }
-
-  $output .=  ' data-babel-link="' . $result->babelLink . '" ';
+  $output .=  ' data-glosses=\'' . str_replace("'", "\u0027", json_encode($result->glosses)) . '\' data-babel-link="' . $result->babelLink . '" ';
 
   if($result->wikiLink){
     $output .=  'data-wiki-link="' . $result->wikiLink .'" >' . $input . '</span>';

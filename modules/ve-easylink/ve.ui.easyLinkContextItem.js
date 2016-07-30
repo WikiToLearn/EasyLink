@@ -146,7 +146,7 @@ ve.ui.easyLinkContextItem.prototype.onClearButtonClick = function() {
 */
 ve.ui.easyLinkContextItem.prototype.onEditButtonClick = function() {
   this.applyToAnnotations(function(fragment, annotation) {
-    var editDialog = new ve.ui.easyLinkEditDialog(fragment, annotation);
+    var editDialog = new ve.ui.easyLinkEditDialog2(fragment, annotation);
     var windowManager = ve.init.target.getSurface().getDialogs();
     windowManager.addWindows([editDialog]);
     windowManager.openWindow(editDialog);
@@ -158,7 +158,6 @@ ve.ui.easyLinkContextItem.prototype.onEditButtonClick = function() {
 * Add this annotation to service's database
 */
 ve.ui.easyLinkContextItem.prototype.onAddButtonClick = function() {
-  //ve.init.target.getSurface().execute('window', 'open', 'easyLinkAnnotationInspector');
   this.applyToAnnotations(function(fragment, annotation) {
     var attributes = annotation.getAttributes();
     var jsonToSend = JSON.stringify(attributes);
@@ -191,9 +190,13 @@ ve.ui.easyLinkContextItem.prototype.getDescription = function() {
   + "</p><p>"
   + "<a target='_blank' href='"
   + descriptionObj.babelLink
-  + "'><img src='http://babelnet.org/imgs/babelnet.png'></a>"
-  + "<a target='_blank' href='"
-  + descriptionObj.wikiLink + "'><img src='http://image005.flaticon.com/28/png/16/33/33949.png'></a></p>";
+  + "'><img src='http://babelnet.org/imgs/babelnet.png'></a>";
+  if(descriptionObj.wikiLink){
+    description += "<a target='_blank' href='"
+    + descriptionObj.wikiLink + "'><img src='http://image005.flaticon.com/28/png/16/33/33949.png'></a></p>";
+  }else{
+    description += "</p>";
+  }
   return description;
 };
 

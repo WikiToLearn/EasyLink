@@ -43,7 +43,8 @@
                 "modules/ve-easylink/ve.ui.easyLinkContextItem.js",
                 "modules/ve-easylink/ve.ui.easyLinkToolbarDialog.js",
                 "modules/ve-easylink/ve.ui.easyLinkDialog.js",
-                "modules/ve-easylink/ve.ui.easyLinkEditDialog.js",
+                "modules/ve-easylink/ve.ui.easyLinkEditDialog2.js",
+                "modules/ve-easylink/ve.ui.easyLinkPage.js",
                 "modules/ve-easylink/ve.ui.easyLinkTool.js",
                 "modules/ve-easylink/resources/config.js"
             ],

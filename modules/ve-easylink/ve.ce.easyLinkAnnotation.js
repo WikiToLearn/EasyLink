@@ -54,10 +54,12 @@ ve.ce.easyLinkAnnotation.static.getGloss = function(model) {
 ve.ce.easyLinkAnnotation.static.getGlossSource = function(model) {
   return model.getGlossSource();
 };
+ve.ce.easyLinkAnnotation.static.getGlosses = function(model) {
+  return model.getGlosses();
+};
 ve.ce.easyLinkAnnotation.static.getBabelLink = function(model) {
   return model.getBabelLink();
 };
-
 ve.ce.easyLinkAnnotation.static.getWikiLink = function(model) {
   return model.getWikiLink();
 };
@@ -69,6 +71,7 @@ ve.ce.easyLinkAnnotation.static.getDescription = function(model) {
     title: ve.ce.easyLinkAnnotation.static.getTitle(model),
     gloss: ve.ce.easyLinkAnnotation.static.getGloss(model),
     glossSource: ve.ce.easyLinkAnnotation.static.getGlossSource(model),
+    glosses: ve.ce.easyLinkAnnotation.static.getGlosses(model),
     babelLink: ve.ce.easyLinkAnnotation.static.getBabelLink(model),
     wikiLink: ve.ce.easyLinkAnnotation.static.getWikiLink(model)
   };

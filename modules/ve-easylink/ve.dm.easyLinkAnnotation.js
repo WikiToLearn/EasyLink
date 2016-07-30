@@ -38,6 +38,7 @@ ve.dm.easyLinkAnnotation.static.toDataElement = function(domElements) {
       title: domElements[0].getAttribute('data-title'),
       gloss: domElements[0].getAttribute('data-gloss'),
       glossSource: domElements[0].getAttribute('data-gloss-source'),
+      glosses: JSON.parse(domElements[0].getAttribute('data-glosses')),
       babelLink: domElements[0].getAttribute('data-babel-link'),
       wikiLink: domElements[0].getAttribute('data-wiki-link')
     }});
@@ -49,6 +50,7 @@ ve.dm.easyLinkAnnotation.static.toDataElement = function(domElements) {
       title: domElements[0].getAttribute('data-title'),
       gloss: domElements[0].getAttribute('data-gloss'),
       glossSource: domElements[0].getAttribute('data-gloss-source'),
+      glosses: JSON.parse(domElements[0].getAttribute('data-glosses')),
       babelLink: domElements[0].getAttribute('data-babel-link'),
       wikiLink: domElements[0].getAttribute('data-wiki-link')
     }
@@ -82,10 +84,12 @@ ve.dm.easyLinkAnnotation.static.getGloss = function(dataElement) {
 ve.dm.easyLinkAnnotation.static.getGlossSource = function(dataElement) {
   return dataElement.attributes.glossSource;
 };
+ve.dm.easyLinkAnnotation.static.getGlosses = function(dataElement) {
+  return dataElement.attributes.glosses;
+};
 ve.dm.easyLinkAnnotation.static.getBabelLink = function(dataElement) {
   return dataElement.attributes.babelLink;
 };
-
 ve.dm.easyLinkAnnotation.static.getWikiLink = function(dataElement) {
   return dataElement.attributes.wikiLink;
 };
@@ -108,10 +112,12 @@ ve.dm.easyLinkAnnotation.prototype.getGloss = function() {
 ve.dm.easyLinkAnnotation.prototype.getGlossSource = function() {
   return this.constructor.static.getGlossSource(this.element);
 };
+ve.dm.easyLinkAnnotation.prototype.getGlosses = function() {
+  return this.constructor.static.getGlosses(this.element);
+};
 ve.dm.easyLinkAnnotation.prototype.getBabelLink = function() {
   return this.constructor.static.getBabelLink(this.element);
 };
-
 ve.dm.easyLinkAnnotation.prototype.getWikiLink = function() {
   return this.constructor.static.getWikiLink(this.element);
 };
@@ -126,6 +132,7 @@ ve.dm.easyLinkAnnotation.prototype.getComparableObject = function() {
     title: this.getAttribute('data-title'),
     gloss: this.getAttribute('data-gloss'),
     glossSource: this.getAttribute('data-gloss-source'),
+    glosses: this.getAttribute('data-glosses'),
     babelLink: this.getAttribute('data-babel-link'),
     wikiLink: this.getAttribute('data-wiki-link')
   };

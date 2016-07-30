@@ -261,7 +261,7 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
     var gloss = val['gloss'];
     var title = val['title'];
     var glossSource = val['glossSource'];
-
+    var glosses = val['glosses'];
     var annotation = new ve.dm.easyLinkAnnotation({
       type: 'link/easyLink',
       attributes: {
@@ -269,6 +269,7 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
         title: title,
         gloss: gloss,
         glossSource: glossSource,
+        glosses: glosses,
         babelLink: babelLink,
         wikiLink: wikiLink
       }
@@ -284,7 +285,7 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
     if(range.length > 0){
       var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
       veDmDocument.commit(transaction, true);
-      ve.dm.easyLinkAnnotation.static.annotationsList.push(annotation);  
+      ve.dm.easyLinkAnnotation.static.annotationsList.push(annotation);
     }
   });
   dialog.close();
