@@ -9,5 +9,6 @@
     "easylink-ve-dialog-intro-text" : "<p>Benvenuto/a in EasyLink!<br><br>Clicca su 'Analizza' per ottenere potenziali link e definizioni.</p>",
     "easylink-ve-dialog-help-text" : "<p>Questo è un testo di aiuto!</p>",
     "easylink-ve-dialog-progress-text" : "Sto analizzando...",
-    "easylink-ve-dialog-gloss-source" : "<em>Fonte:</em> "
+    "easylink-ve-dialog-gloss-source" : "<em>Fonte:</em> ",
+    "easylink-credits-and-stats": "EasyLink è stato realizzato presso l'Innovative Technologies for Interaction and Services Laboratory dell'Università di Milano-Bicocca. I servizi di disambiguazione e knowledge-base sono offerti da [//babelfy.org BabelFy] e [//babelnet.org BabelNet]."
 }

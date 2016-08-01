@@ -205,9 +205,9 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
   var scoredCandidates = dialog.buttonSelectWidget.getSelectedItem().data;
   var threshold = dialog.numberInputWidget.getNumericValue();
   var babelDomain = dialog.selectDomains.getMenu().getSelectedItem().getData();
-  console.warn(threshold);
   getWikitext(function(wikitext) {
     $.post("/Special:EasyLink", {
+      command: 'analyze',
       wikitext: wikitext,
       scoredCandidates: scoredCandidates,
       threshold: threshold,
@@ -225,7 +225,7 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
 /* Polling EasyLinkAPI with request UUID to get progress, status and results  */
 ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
   var dialog = this;
-  $.get("/Special:EasyLink?id=" + requestId, function(response, status) {
+  $.get("/Special:EasyLink", {command: 'polling', requestId: requestId}, function(response, status) {
     var responseObj = JSON.parse(response);
     if (responseObj.status === 'Progress' || response.status === 'Pending') {
       dialog.progressBar.setProgress(responseObj.progress);
@@ -235,7 +235,8 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
     } else {
       dialog.showResults(responseObj.results);
       $.ajax({
-        url: '/Special:EasyLink?id=' + requestId,
+        url: '/Special:EasyLink',
+        data: {command: 'delete', requestId: requestId},
         type: 'DELETE',
         success: function(result) {
           //Do nothing

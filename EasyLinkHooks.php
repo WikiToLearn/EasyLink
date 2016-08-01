@@ -26,7 +26,7 @@ static function easyLinkRender( $input, array $args, Parser $parser, PPFrame $fr
   $babelnetId = $args['data-babelnet-id'];
   $glossSource = $args['data-gloss-source'];
 
-  $resultJSON = SpecialEasyLink::forwardGetAnnotation($babelnetId, $glossSource);
+  $resultJSON = SpecialEasyLink::getAnnotation($babelnetId, $glossSource);
   $result = json_decode($resultJSON);
 
   $output = '<span class="easylink" data-babelnet-id="'

@@ -5,31 +5,33 @@ class SpecialEasyLink extends IncludableSpecialPage {
   }
 
   public function execute() {
-    $method = $_SERVER['REQUEST_METHOD'];
     $request = $this->getRequest();
-    if($method == 'POST' && $request->getVal( 'wikitext' ) != null){
-      $wikitext = $request->getVal( 'wikitext' );
-      $scoredCandidates = $request->getVal('scoredCandidates');
-      $threshold = $request->getVal('threshold');
-      $babelDomain = $request->getVal('babelDomain');
-      $this->forwardPost($wikitext, $scoredCandidates, $threshold, $babelDomain);
-    }elseif($method == 'POST' &&  $request->getVal( 'annotation' ) != null){
-      $annotation = $request->getVal( 'annotation' );
-      $username = $request->getVal('username');
-      $pageName = $request->getVal('pageName');
-      $this->storeAnnotation($annotation, $username, $pageName);
-    }else if($method == 'GET' &&  $request->getVal( 'id' ) != null){
-      $requestId = $request->getVal( 'id' );
-      $this->pollingAPI($requestId);
-    }else if($method == 'DELETE') {
-      $requestId = $request->getVal('id');
-      $this->forwardDelete($requestId);
+    switch($request->getVal('command')){
+      case 'analyze':
+      $this->analyze($request);
+      break;
+      case 'polling':
+      $this->pollingAPI($request);
+      break;
+      case 'delete':
+      $this->deleteRequest($request);
+      break;
+      case 'storeAnnotation':
+      $this->storeAnnotation($request);
+      break;
+      default:
+      $this->renderCreditsAndStats();
+      break;
     }
   }
 
-  public static function forwardPost($wikitext, $scoredCandidates, $threshold, $babelDomain){
-    $params = ['wikitext' => $wikitext, 'scoredCandidates' => $scoredCandidates, 'threshold' => $threshold, 'babelDomain' => $babelDomain];
-
+  private function analyze($request){
+    $params = [
+      'wikitext' => $request->getVal('wikitext'),
+      'scoredCandidates' => $request->getVal('scoredCandidates'),
+      'threshold' => $request->getVal('threshold'),
+      'babelDomain' => $request->getVal('babelDomain')
+    ];
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a userAgent too here
@@ -50,10 +52,11 @@ class SpecialEasyLink extends IncludableSpecialPage {
     die();
   }
 
-  public static function forwardGetAnnotation($babelnetId, $glossSource){
+  public static function getAnnotation($babelnetId, $glossSource){
     // Get cURL resource
     $curl = curl_init();
-    $url = 'http://easylink:8080/EasyLinkAPI/webapi/annotation/' . $babelnetId . '/' . str_replace(' ', '%20', $glossSource);
+    $url = 'http://easylink:8080/EasyLinkAPI/webapi/annotation/'
+    . $babelnetId . '/' . str_replace(' ', '%20', $glossSource);
     // Set some options - we are passing in a userAgent too here
     curl_setopt_array($curl, array(
       CURLOPT_RETURNTRANSFER => 1,
@@ -66,20 +69,11 @@ class SpecialEasyLink extends IncludableSpecialPage {
     return $response;
   }
 
-  public function storeAnnotation($annotation, $username, $pageName){
-    /*$result = json_decode($annotation);
+  private function storeAnnotation($request){
     $params = [
-      'babelnetId' => $result->babelnetId
-      'title' => $result->title,
-      'gloss' => $result->gloss,
-      'glossSource' => $result->glossSource,
-      'wikiLink' => $result->wikiLink,
-      'babelLink' => $result->babelLink
-    ];*/
-    $params = [
-      'annotation' => $annotation,
-      'username' => $username,
-      'pageName' => $pageName
+      'annotation' => $request->getVal('annotation'),
+      'username' => $request->getVal('username'),
+      'pageName' => $request->getVal('pageName')
     ];
     // Get cURL resource
     $curl = curl_init();
@@ -101,7 +95,8 @@ class SpecialEasyLink extends IncludableSpecialPage {
     die();
   }
 
-  public static function pollingAPI($requestId){
+  private function pollingAPI($request){
+    $requestId = $request->getVal('requestId');
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a userAgent too here
@@ -118,7 +113,8 @@ class SpecialEasyLink extends IncludableSpecialPage {
     die();
   }
 
-  public function forwardDelete($requestId){
+  private function deleteRequest($request){
+    $requestId = $request->getVal('requestId');
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a userAgent too here
@@ -135,5 +131,8 @@ class SpecialEasyLink extends IncludableSpecialPage {
     die();
   }
 
-
+  private function renderCreditsAndStats(){
+    $out = $this->getOutput();
+    $out->addWikiMsg('easylink-credits-and-stats');
+  }
 }

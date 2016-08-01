@@ -164,6 +164,7 @@ ve.ui.easyLinkContextItem.prototype.onAddButtonClick = function() {
     var pageName = mw.config.get('wgPageName');
     var username = mw.config.get('wgUserName');
     $.post("/Special:EasyLink", {
+      command: 'storeAnnotation',
       annotation : jsonToSend,
       username : username,
       pageName: pageName
