@@ -19,6 +19,9 @@ class SpecialEasyLink extends IncludableSpecialPage {
       case 'storeAnnotation':
       $this->storeAnnotation($request);
       break;
+      case 'getMoreGlosses':
+      $this->getMoreGlosses($request);
+      break;
       default:
       $this->renderCreditsAndStats();
       break;
@@ -30,7 +33,8 @@ class SpecialEasyLink extends IncludableSpecialPage {
       'wikitext' => $request->getVal('wikitext'),
       'scoredCandidates' => $request->getVal('scoredCandidates'),
       'threshold' => $request->getVal('threshold'),
-      'babelDomain' => $request->getVal('babelDomain')
+      'babelDomain' => $request->getVal('babelDomain'),
+      'language' => $request->getVal('language')
     ];
     // Get cURL resource
     $curl = curl_init();
@@ -127,6 +131,24 @@ class SpecialEasyLink extends IncludableSpecialPage {
     $response = curl_exec($curl);
     // Close request to clear up some resources
     curl_close($curl);
+    echo $response;
+    die();
+  }
+
+  private function getMoreGlosses($request){
+    $babelnetId = $request->getVal('babelnetId');
+    // Get cURL resource
+    $curl = curl_init();
+    // Set some options - we are passing in a userAgent too here
+    curl_setopt_array($curl, array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_URL => 'http://easylink:8080/EasyLinkAPI/webapi/annotation/' . $babelnetId
+    ));
+    // Send the request & save response to $response
+    $response = curl_exec($curl);
+    // Close request to clear up some resources
+    curl_close($curl);
+    //return $response;
     echo $response;
     die();
   }

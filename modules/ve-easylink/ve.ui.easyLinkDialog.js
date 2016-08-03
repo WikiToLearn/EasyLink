@@ -211,7 +211,8 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
       wikitext: wikitext,
       scoredCandidates: scoredCandidates,
       threshold: threshold,
-      babelDomain: babelDomain
+      babelDomain: babelDomain,
+      language: mw.config.get('wgContentLanguage')
     }, function(response, status) {
       if (status === 'success' && response) {
         callbackProva(response);
@@ -254,7 +255,7 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
   ve.dm.easyLinkAnnotation.static.annotationsList = [];
 
   $.each(results, function(key, val) {
-    var babelnetId = val['id'];
+    var babelnetId = val['babelnetId'];
     var babelLink = val['babelLink'];
     if(val['wikiLink'] !== null){
       var wikiLink = val['wikiLink'];

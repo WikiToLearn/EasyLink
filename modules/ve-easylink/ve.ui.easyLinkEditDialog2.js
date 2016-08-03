@@ -115,7 +115,6 @@ return ve.ui.easyLinkEditDialog2.super.prototype.getActionProcess.call(this, act
  * Builds the pages
  */
 ve.ui.easyLinkEditDialog2.prototype.buildPages = function () {
-
 	this.bookletLayout = new OO.ui.BookletLayout( {
 		outlined: true,
 		continuous: false
@@ -123,11 +122,12 @@ ve.ui.easyLinkEditDialog2.prototype.buildPages = function () {
 	this.pages = [];
   var annotationKeys = Object.keys(this.annotation.getAttributes());
   for(i=0; i<annotationKeys.length; i++){
-    if(annotationKeys[i] === 'glosses' || annotationKeys[i] === 'wikiLink'){
+    if(this.testAnnotationKeys(annotationKeys[i], this.annotation)){
       this.pages.push(
   			new ve.ui.easyLinkPage( annotationKeys[i], {
   				label: annotationKeys[i],
-  				attribute: this.annotation.getAttribute(annotationKeys[i])
+  				attribute: this.annotation.getAttribute(annotationKeys[i]),
+					babelnetId: this.annotation.getBabelnetId()
   			} )
   		);
     }
@@ -137,6 +137,13 @@ ve.ui.easyLinkEditDialog2.prototype.buildPages = function () {
 
 	this.updateSize();
 };
+
+ve.ui.easyLinkEditDialog2.prototype.testAnnotationKeys = function(annotationKey, annotation){
+	if(annotationKey === 'glosses' || (annotationKey === 'wikiLink' && annotation.getAttribute(annotationKey))){
+		return true;
+	}
+	return false;
+}
 
 /* Registration */
 

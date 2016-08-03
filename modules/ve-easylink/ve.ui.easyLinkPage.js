@@ -15,6 +15,7 @@ ve.ui.easyLinkPage = function ( name, config ) {
 
 	this.label = config.label;
 	this.attribute = config.attribute;
+	this.babelnetId = config.babelnetId;
   this.inputWidget = null;
   if(this.label === 'wikiLink'){
     this.inputWidget = this.createInputWidget();
@@ -41,12 +42,24 @@ ve.ui.easyLinkPage = function ( name, config ) {
       icon: 'check',
       iconTitle: 'Confirm'
     } );
-    this.$textDiv.append(this.$textDiv.$element, this.inputWidget.$element, this.fieldLayout.$element, this.addButton.$element, this.confirmButton.$element);
+		this.getMoreButton = new OO.ui.ButtonWidget( {
+      label: 'Get more!',
+      icon: 'search',
+      iconTitle: 'GetMore'
+    } );
+    this.$textDiv.append(
+			this.inputWidget.$element,
+			this.fieldLayout.$element,
+			this.addButton.$element,
+			this.getMoreButton.$element,
+			this.confirmButton.$element
+		);
     this.inputWidget.toggle();
     this.confirmButton.toggle();
     this.addButton.connect(this, {'click': 'onAddButtonClick'});
     this.confirmButton.connect(this, {'click': 'onConfirmButtonClick'});
     this.dropdownWidget.connect(this, {'labelChange': 'onLabelChange'});
+		this.getMoreButton.connect(this, {'click': 'onGetMoreButtonClick'});
   }
 	this.$element
 		.addClass( 've-ui-easyLinkPage' )
@@ -70,9 +83,10 @@ ve.ui.easyLinkPage.prototype.onAddButtonClick = function(){
   this.fieldLayout.toggle();
   this.addButton.toggle();
   this.confirmButton.toggle();
+	this.getMoreButton.toggle();
 };
 
-ve.ui.easyLinkPage.prototype.onConfirmButtonClick = function(){
+ve.ui.easyLinkPage.prototype.onConfirmButtonClick = function() {
   var newGloss = this.inputWidget.getValue();
   this.inputWidget.toggle();
   this.$glossText.html(newGloss);
@@ -89,6 +103,29 @@ ve.ui.easyLinkPage.prototype.onConfirmButtonClick = function(){
   }
   this.dropdownWidget.getMenu().selectItemByLabel('WikiToLearn');
   this.fieldLayout.toggle();
+	this.getMoreButton.toggle();
+};
+
+ve.ui.easyLinkPage.prototype.onGetMoreButtonClick = function() {
+	var page = this;
+	$.getJSON(
+		'/Special:EasyLink',
+		{command: 'getMoreGlosses', babelnetId: page.babelnetId}
+	).done(function(results){
+		var items = [];
+	  $.each(results, function(key, value){
+			if(!page.dropdownWidget.getMenu().getItemFromLabel(value.glossSource)){
+				items.push(new OO.ui.MenuOptionWidget( {
+						data: value.gloss,
+						label: value.glossSource,
+				} ));
+			}
+	  });
+		page.dropdownWidget.getMenu().addItems(items);
+	}).fail(function( jqxhr, textStatus, error){
+		var err = textStatus + ", " + error;
+    console.log( "Request Failed: " + err );
+	})
 };
 
 ve.ui.easyLinkPage.prototype.createDropdown = function(config) {
