@@ -1,31 +1,10 @@
 /* Get the Wikitext */
 function getWikitext(callback) {
   var dom = ve.init.target.getSurface().getDom();
-  console.warn(dom);
   ve.init.target.serialize(dom, function(wikitext) {
     callback(wikitext);
   });
 };
-
-/* Get HTML text or HTML with tags
-var HTML = (function(){
-var getText = function(){
-var _DOMObj = ve.init.target.getSurface().getDom();
-console.warn("###outerTEXT###");
-return _DOMObj.body.outerText;
-};
-var getHTMLToString = function(){
-var _DOMObj = ve.init.target.getSurface().getDom();
-console.warn("###outerHTML###");
-return _DOMObj.body.outerHTML;
-};
-return{
-getText : getText,
-getHTMLToString : getHTMLToString
-};
-})();*/
-
-
 
 /* Create a dialog */
 ve.ui.easyLinkDialog = function(manager, config) {
@@ -34,7 +13,6 @@ ve.ui.easyLinkDialog = function(manager, config) {
 };
 
 /* Inheritance */
-
 OO.inheritClass(ve.ui.easyLinkDialog, OO.ui.ProcessDialog);
 
 /* Define actions */
@@ -200,7 +178,7 @@ ve.ui.easyLinkDialog.prototype.getSetupProcess = function(data) {
 };
 
 /* Send Wikitext to EasyLinkAPI and get as response a request UUID to polling progress and results*/
-ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
+ve.ui.easyLinkDialog.prototype.analyze = function(callback) {
   var dialog = this;
   var scoredCandidates = dialog.buttonSelectWidget.getSelectedItem().data;
   var threshold = dialog.numberInputWidget.getNumericValue();
@@ -215,7 +193,7 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
       language: mw.config.get('wgContentLanguage')
     }, function(response, status) {
       if (status === 'success' && response) {
-        callbackProva(response);
+        callback(response);
       }
     });
   });
@@ -226,15 +204,14 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callbackProva) {
 /* Polling EasyLinkAPI with request UUID to get progress, status and results  */
 ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
   var dialog = this;
-  $.get("/Special:EasyLink", {command: 'polling', requestId: requestId}, function(response, status) {
-    var responseObj = JSON.parse(response);
-    if (responseObj.status === 'Progress' || response.status === 'Pending') {
-      dialog.progressBar.setProgress(responseObj.progress);
+  $.getJSON("/Special:EasyLink", {command: 'polling', requestId: requestId}, function(response, status) {
+    if (response.status === 'Progress' || response.status === 'Pending') {
+      dialog.progressBar.setProgress(response.progress);
       setTimeout(function() {
-        dialog.pollingAPI(responseObj.id);
+        dialog.pollingAPI(response.id);
       }, (2 * 1000));
     } else {
-      dialog.showResults(responseObj.results);
+      dialog.showResults(response.results);
       $.ajax({
         url: '/Special:EasyLink',
         data: {command: 'delete', requestId: requestId},
@@ -251,9 +228,26 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
 ve.ui.easyLinkDialog.prototype.showResults = function(results) {
   var dialog = this;
   dialog.layoutProgress.toggle(false);
-
   ve.dm.easyLinkAnnotation.static.annotationsList = [];
+  if(Array.isArray(results)){
+    dialog.processResultsArray(results);
+  }else {
+    dialog.processResultsMap(results);
+  }
+  dialog.close();
+  dialog.progressBar.setProgress("0");
+  dialog.actions.setMode('intro');
+  dialog.stackLayout.setItem(dialog.panelIntro);
+  ve.init.target.getSurface().execute('window', 'close', 'easyLinkToolbarDialog');
+  ve.init.target.getSurface().execute('window', 'open', 'easyLinkToolbarDialog');
+};
 
+ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
+  console.log(results);
+};
+
+ve.ui.easyLinkDialog.prototype.processResultsArray =  function(results){
+  var dialog = this;
   $.each(results, function(key, val) {
     var babelnetId = val['babelnetId'];
     var babelLink = val['babelLink'];
@@ -276,26 +270,24 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
         wikiLink: wikiLink
       }
     });
-    var veDmSurface = ve.init.target.getSurface().getModel();
-    var veDmDocument = veDmSurface.getDocument();
-
-    var range = veDmDocument.findText(title, {
-      //noOverlaps: true,
-      caseSensitiveString: true,
-      wholeWord: true
-    });
-    if(range.length > 0){
-      var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
-      veDmDocument.commit(transaction, true);
-      ve.dm.easyLinkAnnotation.static.annotationsList.push(annotation);
-    }
+    dialog.annotate(title, annotation);
   });
-  dialog.close();
-  dialog.progressBar.setProgress("0");
-  dialog.actions.setMode('intro');
-  dialog.stackLayout.setItem(dialog.panelIntro);
-  ve.init.target.getSurface().execute('window', 'close', 'easyLinkToolbarDialog');
-  ve.init.target.getSurface().execute('window', 'open', 'easyLinkToolbarDialog');
+};
+
+ve.ui.easyLinkDialog.prototype.annotate = function(title, annotation){
+  var veDmSurface = ve.init.target.getSurface().getModel();
+  var veDmDocument = veDmSurface.getDocument();
+
+  var range = veDmDocument.findText(title, {
+    //noOverlaps: true,
+    caseSensitiveString: true,
+    wholeWord: true
+  });
+  if(range.length > 0){
+    var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
+    veDmDocument.commit(transaction, true);
+    ve.dm.easyLinkAnnotation.static.annotationsList.push(annotation);
+  }
 };
 
 /* Registration Dialog*/

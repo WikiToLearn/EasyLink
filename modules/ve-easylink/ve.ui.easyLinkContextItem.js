@@ -39,7 +39,16 @@ ve.ui.easyLinkContextItem = function(context, model, config) {
 
   this.editButton = new OO.ui.ButtonWidget({
     icon: 'edit',
+    framed: false,
+    classes: ['pull-right'],
     iconTitle: 'Edit'
+  });
+
+  this.nextButton = new OO.ui.ButtonWidget({
+    framed: false,
+    classes: ['pull-right'],
+    icon: 'next',
+    iconTitle: 'Next'
   });
 
   if (this.isClearable() && this.isEditable()) {
@@ -66,7 +75,7 @@ ve.ui.easyLinkContextItem = function(context, model, config) {
   this.$body.addClass( 've-ui-linearContextItem-body' );
   this.$element
   .addClass( 've-ui-linearContextItem' )
-  .append( this.$head, this.$body, this.editButton.$element );
+  .append( this.$head, this.nextButton.$element, this.$body, this.editButton.$element );
 
   //Events
   this.clearButton.connect(this, {
@@ -77,6 +86,9 @@ ve.ui.easyLinkContextItem = function(context, model, config) {
   });
   this.editButton.connect(this, {
     click: 'onEditButtonClick'
+  });
+  this.nextButton.connect(this, {
+    click: 'onNextIndicatorClick'
   });
 };
 
@@ -174,6 +186,10 @@ ve.ui.easyLinkContextItem.prototype.onAddButtonClick = function() {
       }
     });
   });
+};
+
+ve.ui.easyLinkContextItem.prototype.onNextIndicatorClick = function(){
+  console.log("clicked");
 };
 
 /**
