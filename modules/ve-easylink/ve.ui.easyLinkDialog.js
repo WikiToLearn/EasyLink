@@ -243,7 +243,64 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
 };
 
 ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
-  console.log(results);
+  var dialog = this;
+  var titles= Object.keys(results);
+  for (var title of titles) {
+    var annotationList = results[title];
+    dialog.buildAvailableAnnotationsMap(title, annotationList);
+    var babelnetId = annotationList[0]['babelnetId'];
+    var babelLink = annotationList[0]['babelLink'];
+    if(annotationList[0]['wikiLink'] !== null){
+      var wikiLink = annotationList[0]['wikiLink'];
+    }
+    var gloss = annotationList[0]['gloss'];
+    var title = annotationList[0]['title'];
+    var glossSource = annotationList[0]['glossSource'];
+    var glosses = annotationList[0]['glosses'];
+    var annotation = new ve.dm.easyLinkAnnotation({
+      type: 'link/easyLink',
+      attributes: {
+        babelnetId: babelnetId,
+        title: title,
+        gloss: gloss,
+        glossSource: glossSource,
+        glosses: glosses,
+        babelLink: babelLink,
+        wikiLink: wikiLink
+      }
+    });
+    dialog.annotate(title, annotation);
+  }
+};
+
+ve.ui.easyLinkDialog.prototype.buildAvailableAnnotationsMap = function(title, annotationsList){
+  var map = ve.dm.easyLinkAnnotation.static.availableAnnotationsMap;
+  var availableAnnotationsList = [];
+  for (annotation of annotationsList) {
+    var babelnetId = annotation['babelnetId'];
+    var babelLink = annotation['babelLink'];
+    if(annotation['wikiLink'] !== null){
+      var wikiLink = annotation['wikiLink'];
+    }
+    var gloss = annotation['gloss'];
+    var title = annotation['title'];
+    var glossSource = annotation['glossSource'];
+    var glosses = annotation['glosses'];
+    var availableAnnotation = new ve.dm.easyLinkAnnotation({
+      type: 'link/easyLink',
+      attributes: {
+        babelnetId: babelnetId,
+        title: title,
+        gloss: gloss,
+        glossSource: glossSource,
+        glosses: glosses,
+        babelLink: babelLink,
+        wikiLink: wikiLink
+      }
+    });
+    availableAnnotationsList.push(availableAnnotation);
+  }
+  map[title] = availableAnnotationsList;
 };
 
 ve.ui.easyLinkDialog.prototype.processResultsArray =  function(results){

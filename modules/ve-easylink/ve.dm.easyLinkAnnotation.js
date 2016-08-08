@@ -19,10 +19,10 @@ OO.inheritClass(ve.dm.easyLinkAnnotation, ve.dm.Annotation);
 
 ve.dm.easyLinkAnnotation.static.name = 'link/easyLink';
 ve.dm.easyLinkAnnotation.static.class = 've-dm-easyLinkAnnotation';
-
 ve.dm.easyLinkAnnotation.static.matchTagNames = ['span'];
-
 ve.dm.easyLinkAnnotation.static.annotationsList = [];
+ve.dm.easyLinkAnnotation.static.availableAnnotationsMap = {};
+
 
 //ve.dm.easyLinkAnnotation.static.matchRdfaTypes = ['mw:Extension/easylink'];
 

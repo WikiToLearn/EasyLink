@@ -88,7 +88,7 @@ ve.ui.easyLinkContextItem = function(context, model, config) {
     click: 'onEditButtonClick'
   });
   this.nextButton.connect(this, {
-    click: 'onNextIndicatorClick'
+    click: 'onNextButtonClick'
   });
 };
 
@@ -188,8 +188,30 @@ ve.ui.easyLinkContextItem.prototype.onAddButtonClick = function() {
   });
 };
 
-ve.ui.easyLinkContextItem.prototype.onNextIndicatorClick = function(){
-  console.log("clicked");
+ve.ui.easyLinkContextItem.prototype.onNextButtonClick = function(){
+  this.applyToAnnotations(function(fragment, annotation) {
+    var availableAnnotationsList = ve.dm.easyLinkAnnotation.static.availableAnnotationsMap[annotation.getTitle()];
+    if(!availableAnnotationsList){
+      return;
+    }
+    var annotations = ve.dm.easyLinkAnnotation.static.annotationsList;
+    var nextAnnotation;
+    for (var i = 0; i < availableAnnotationsList.length; i++) {
+      if(availableAnnotationsList[i].getBabelnetId() === annotation.getBabelnetId()){
+        if(i === availableAnnotationsList.length - 1){
+          nextAnnotation = availableAnnotationsList[0];
+          break;
+        }else {
+          nextAnnotation = availableAnnotationsList[i+1];
+          break;
+        }
+      }
+    }
+    fragment.annotateContent('clear', annotation);
+    fragment.annotateContent('set', nextAnnotation);
+    annotations.splice(annotations.indexOf(annotation));
+    annotations.push(nextAnnotation);
+  });
 };
 
 /**
