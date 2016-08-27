@@ -10,6 +10,6 @@
     "easylink-ve-dialog-help-text" : "<p>This is an help text!</p>",
     "easylink-ve-dialog-progress-text" : "I'm analyzing...",
     "easylink-ve-dialog-gloss-source" : "<em>Source:</em> ",
-    "easylink-credits-and-stats": "EasyLink has been realized at Innovative Technologies for Interaction and Services Laboratory at University of Milano-Bicocca. Disambiguation and knowledge-base services are powered by [//babelfy.org BabelFy] and [//babelnet.org BabelNet]."
+    "easylink-credits-and-stats": "EasyLink has been realized at Innovative Technologies for Interaction and Services Laboratory at University of Milano-Bicocca. Disambiguation and knowledge-base services are powered by [//babelfy.org Babelfy] and [//babelnet.org BabelNet]."
 
 }

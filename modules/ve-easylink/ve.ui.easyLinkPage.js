@@ -109,8 +109,11 @@ ve.ui.easyLinkPage.prototype.onConfirmButtonClick = function() {
 ve.ui.easyLinkPage.prototype.onGetMoreButtonClick = function() {
 	var page = this;
 	$.getJSON(
-		'/Special:EasyLink',
-		{command: 'getMoreGlosses', babelnetId: page.babelnetId}
+		mw.util.wikiScript(), {
+	    action: 'ajax',
+	    rs: 'SpecialEasyLink::getMoreGlosses',
+	    rsargs: [page.babelnetId]
+	  }
 	).done(function(results){
 		var items = [];
 	  $.each(results, function(key, value){

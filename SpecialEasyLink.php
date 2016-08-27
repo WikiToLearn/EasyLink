@@ -1,40 +1,20 @@
 <?php
-class SpecialEasyLink extends IncludableSpecialPage {
+class SpecialEasyLink extends SpecialPage {
   public function __construct( $name = 'EasyLink' ) {
     parent::__construct( $name );
   }
 
   public function execute() {
-    $request = $this->getRequest();
-    switch($request->getVal('command')){
-      case 'analyze':
-      $this->analyze($request);
-      break;
-      case 'polling':
-      $this->pollingAPI($request);
-      break;
-      case 'delete':
-      $this->deleteRequest($request);
-      break;
-      case 'storeAnnotation':
-      $this->storeAnnotation($request);
-      break;
-      case 'getMoreGlosses':
-      $this->getMoreGlosses($request);
-      break;
-      default:
       $this->renderCreditsAndStats();
-      break;
-    }
   }
 
-  private function analyze($request){
+  public static function analyze($wikitext, $scoredCandidates, $threshold, $babelDomain, $language){
     $params = [
-      'wikitext' => $request->getVal('wikitext'),
-      'scoredCandidates' => $request->getVal('scoredCandidates'),
-      'threshold' => $request->getVal('threshold'),
-      'babelDomain' => $request->getVal('babelDomain'),
-      'language' => $request->getVal('language')
+      'wikitext' => $wikitext,
+      'scoredCandidates' => $scoredCandidates,
+      'threshold' => $threshold,
+      'babelDomain' => $babelDomain,
+      'language' => $language
     ];
     // Get cURL resource
     $curl = curl_init();
@@ -46,14 +26,12 @@ class SpecialEasyLink extends IncludableSpecialPage {
       CURLOPT_URL => 'http://easylink:8080/EasyLinkAPI/webapi/analyze',
       CURLOPT_POST => 1,
       CURLOPT_POSTFIELDS => http_build_query($params),
-      //CURLOPT_TIMEOUT => 60
     ));
     // Send the request & save response to $response
     $response = curl_exec($curl);
     // Close request to clear up some resources
     curl_close($curl);
-    echo $response;
-    die();
+    return $response;
   }
 
   public static function getAnnotation($babelnetId, $glossSource){
@@ -73,11 +51,11 @@ class SpecialEasyLink extends IncludableSpecialPage {
     return $response;
   }
 
-  private function storeAnnotation($request){
+  public static function storeAnnotation($annotation, $pageName, $username){
     $params = [
-      'annotation' => $request->getVal('annotation'),
-      'username' => $request->getVal('username'),
-      'pageName' => $request->getVal('pageName')
+      'annotation' => $annotation,
+      'username' => $username,
+      'pageName' => $pagename
     ];
     // Get cURL resource
     $curl = curl_init();
@@ -95,12 +73,10 @@ class SpecialEasyLink extends IncludableSpecialPage {
     $response = curl_exec($curl);
     // Close request to clear up some resources
     curl_close($curl);
-    echo $response;
-    die();
+    return $response;
   }
 
-  private function pollingAPI($request){
-    $requestId = $request->getVal('requestId');
+  public static function pollingAPI($requestId){
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a userAgent too here
@@ -112,31 +88,26 @@ class SpecialEasyLink extends IncludableSpecialPage {
     $response = curl_exec($curl);
     // Close request to clear up some resources
     curl_close($curl);
-    //return $response;
-    echo $response;
-    die();
+    return $response;
   }
 
-  private function deleteRequest($request){
-    $requestId = $request->getVal('requestId');
+  public static function deleteRequest($requestId){
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a userAgent too here
     curl_setopt_array($curl, array(
       CURLOPT_RETURNTRANSFER => 1,
-      CURLOPT_CUSTOMREQUEST => "DELETE",
+      CURLOPT_CUSTOMREQUEST => 'DELETE',
       CURLOPT_URL => 'http://easylink:8080/EasyLinkAPI/webapi/status/' . $requestId
     ));
     // Send the request & save response to $response
     $response = curl_exec($curl);
     // Close request to clear up some resources
     curl_close($curl);
-    echo $response;
-    die();
+    return $response;
   }
 
-  private function getMoreGlosses($request){
-    $babelnetId = $request->getVal('babelnetId');
+  public static function getMoreGlosses($babelnetId){
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a userAgent too here
@@ -148,9 +119,7 @@ class SpecialEasyLink extends IncludableSpecialPage {
     $response = curl_exec($curl);
     // Close request to clear up some resources
     curl_close($curl);
-    //return $response;
-    echo $response;
-    die();
+    return $response;
   }
 
   private function renderCreditsAndStats(){
