@@ -120,13 +120,13 @@ ve.ui.easyLinkToolbarDialog.prototype.onConfirmAllButtonClick = function() {
 ve.ui.easyLinkToolbarDialog.prototype.confirmAll = function(annotations) {
   $.each(annotations, function(key, annotation){
     var attributes = annotation.getAttributes();
-    var annotation = JSON.stringify(attributes);
+    var annotationJson = JSON.stringify(attributes);
     var pageName = mw.config.get('wgPageName');
     var username = mw.config.get('wgUserName');
     $.post(mw.util.wikiScript(), {
       action: 'ajax',
       rs: 'SpecialEasyLink::storeAnnotation',
-      rsargs: [annotation, username, pageName]
+      rsargs: [annotationJson, username, pageName]
     }, function (response, status) {
       if (status === 'success' && response) {
         alert("Stored!");

@@ -240,7 +240,7 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
 
 ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
   var dialog = this;
-  var titles= Object.keys(results);
+  var titles = Object.keys(results);
   for (var title of titles) {
     var annotationList = results[title];
     dialog.buildAvailableAnnotationsMap(title, annotationList);
@@ -250,14 +250,14 @@ ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
       var wikiLink = annotationList[0]['wikiLink'];
     }
     var gloss = annotationList[0]['gloss'];
-    var title = annotationList[0]['title'];
+    var annotationTitle = annotationList[0]['title'];
     var glossSource = annotationList[0]['glossSource'];
     var glosses = annotationList[0]['glosses'];
     var annotation = new ve.dm.easyLinkAnnotation({
       type: 'link/easyLink',
       attributes: {
         babelnetId: babelnetId,
-        title: title,
+        title: annotationTitle,
         gloss: gloss,
         glossSource: glossSource,
         glosses: glosses,
@@ -265,7 +265,7 @@ ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
         wikiLink: wikiLink
       }
     });
-    dialog.annotate(title, annotation);
+    dialog.annotate(annotationTitle, annotation);
   }
 };
 
@@ -279,14 +279,14 @@ ve.ui.easyLinkDialog.prototype.buildAvailableAnnotationsMap = function(title, an
       var wikiLink = annotation['wikiLink'];
     }
     var gloss = annotation['gloss'];
-    var title = annotation['title'];
+    var annotationTitle = annotation['title'];
     var glossSource = annotation['glossSource'];
     var glosses = annotation['glosses'];
     var availableAnnotation = new ve.dm.easyLinkAnnotation({
       type: 'link/easyLink',
       attributes: {
         babelnetId: babelnetId,
-        title: title,
+        title: annotationTitle,
         gloss: gloss,
         glossSource: glossSource,
         glosses: glosses,
