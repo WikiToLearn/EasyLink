@@ -24,11 +24,6 @@ ve.ui.easyLinkDialog.prototype.getActionProcess = function(action) {
       dialog.analyze(function(results) {
         if (results) {
           dialog.pollingAPI(results);
-          /*        $.when(dialog.showResults(results)).done(function(){
-          dialog.fieldProgress.toggle(false);
-          dialog.actions.setMode('results');
-          dialog.stackLayout.setItem(dialog.panelResults);
-        });*/
       }
     });
   }, this);
@@ -187,16 +182,14 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callback) {
   var scoredCandidates = dialog.buttonSelectWidget.getSelectedItem().data;
   var threshold = dialog.numberInputWidget.getNumericValue();
   var babelDomain = dialog.selectDomains.getMenu().getSelectedItem().getData();
+  var language = mw.config.get('wgContentLanguage');
   getWikitext(function(wikitext) {
-    $.post("/Special:EasyLink", {
-      command: 'analyze',
-      wikitext: wikitext,
-      scoredCandidates: scoredCandidates,
-      threshold: threshold,
-      babelDomain: babelDomain,
-      language: mw.config.get('wgContentLanguage')
-    }, function(response, status) {
-      if (status === 'success' && response) {
+    $.post(mw.util.wikiScript(), {
+      action: 'ajax',
+      rs: 'SpecialEasyLink::analyze',
+      rsargs: [wikitext, scoredCandidates, threshold, babelDomain, language]
+    }, function (response) {
+      if (response) {
         callback(response);
       }
     });
@@ -208,7 +201,11 @@ ve.ui.easyLinkDialog.prototype.analyze = function(callback) {
 /* Polling EasyLinkAPI with request UUID to get progress, status and results  */
 ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
   var dialog = this;
-  $.getJSON("/Special:EasyLink", {command: 'polling', requestId: requestId}, function(response, status) {
+  $.getJSON( mw.util.wikiScript(), {
+    action: 'ajax',
+    rs: 'SpecialEasyLink::pollingAPI',
+    rsargs: [requestId]
+  }, function ( response ) {
     if (response.status === 'Progress' || response.status === 'Pending') {
       dialog.progressBar.setProgress(response.progress);
       setTimeout(function() {
@@ -216,13 +213,12 @@ ve.ui.easyLinkDialog.prototype.pollingAPI = function(requestId) {
       }, (2 * 1000));
     } else {
       dialog.showResults(response.results);
-      $.ajax({
-        url: '/Special:EasyLink',
-        data: {command: 'delete', requestId: requestId},
-        type: 'DELETE',
-        success: function(result) {
-          //Do nothing
-        }
+      $.get( mw.util.wikiScript(), {
+        action: 'ajax',
+        rs: 'SpecialEasyLink::deleteRequest',
+        rsargs: [response.id]
+      }, function ( response ) {
+        //Do nothing
       });
     }
   });
@@ -249,7 +245,7 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
 
 ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
   var dialog = this;
-  var titles= Object.keys(results);
+  var titles = Object.keys(results);
   for (var title of titles) {
     var annotationList = results[title];
     dialog.buildAvailableAnnotationsMap(title, annotationList);
@@ -259,14 +255,14 @@ ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
       var wikiLink = annotationList[0]['wikiLink'];
     }
     var gloss = annotationList[0]['gloss'];
-    var title = annotationList[0]['title'];
+    var annotationTitle = annotationList[0]['title'];
     var glossSource = annotationList[0]['glossSource'];
     var glosses = annotationList[0]['glosses'];
     var annotation = new ve.dm.easyLinkAnnotation({
       type: 'link/easyLink',
       attributes: {
         babelnetId: babelnetId,
-        title: title,
+        title: annotationTitle,
         gloss: gloss,
         glossSource: glossSource,
         glosses: glosses,
@@ -274,7 +270,7 @@ ve.ui.easyLinkDialog.prototype.processResultsMap = function(results){
         wikiLink: wikiLink
       }
     });
-    dialog.annotate(title, annotation);
+    dialog.annotate(annotationTitle, annotation);
   }
 };
 
@@ -288,14 +284,14 @@ ve.ui.easyLinkDialog.prototype.buildAvailableAnnotationsMap = function(title, an
       var wikiLink = annotation['wikiLink'];
     }
     var gloss = annotation['gloss'];
-    var title = annotation['title'];
+    var annotationTitle = annotation['title'];
     var glossSource = annotation['glossSource'];
     var glosses = annotation['glosses'];
     var availableAnnotation = new ve.dm.easyLinkAnnotation({
       type: 'link/easyLink',
       attributes: {
         babelnetId: babelnetId,
-        title: title,
+        title: annotationTitle,
         gloss: gloss,
         glossSource: glossSource,
         glosses: glosses,
