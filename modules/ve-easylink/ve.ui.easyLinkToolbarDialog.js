@@ -86,10 +86,16 @@ ve.ui.easyLinkToolbarDialog.prototype.getSetupProcess = function(data){
   return ve.ui.easyLinkToolbarDialog.super.prototype.getSetupProcess.call( this, data )
 		.next( function () {
       this.results.empty();
-      var annotations = ve.dm.easyLinkAnnotation.static.annotationsList;
+      var result;
       var results = this.results;
+      var annotations = ve.dm.easyLinkAnnotation.static.annotationsList;
       $.each(annotations, function(key, annotation){
-        var result = '<strong>' + annotation.getTitle() + '</strong> ';
+        if(Object.keys(ve.dm.easyLinkAnnotation.static.availableAnnotationsMap).length !== 0){
+          var availableAnnotationsList = ve.dm.easyLinkAnnotation.static.availableAnnotationsMap[annotation.getTitle()];
+          result = '<strong>' + annotation.getTitle() + '(' + availableAnnotationsList.length + ')</strong> ';
+        }else {
+          result = '<strong>' + annotation.getTitle() + '</strong> ';
+        }
         results.append(result);
       });
 		}, this );

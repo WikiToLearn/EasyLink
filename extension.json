@@ -68,7 +68,8 @@
                 "easylink-ve-dialog-gloss-source",
                 "easylink-ve-dialog-scored-select",
                 "easylink-ve-dialog-scored-select-all",
-                "easylink-ve-dialog-scored-select-top"
+                "easylink-ve-dialog-scored-select-top",
+                "easylink-ve-contextitem-of"
             ]
         }
     },

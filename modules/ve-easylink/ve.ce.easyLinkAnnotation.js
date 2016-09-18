@@ -68,6 +68,7 @@ ve.ce.easyLinkAnnotation.static.getDescription = function(model) {
   //var description = ve.ce.easyLinkAnnotation.static.getTitle(model).toUpperCase();
   //description = description + "<br>" + ve.ce.easyLinkAnnotation.static.getGloss(model);
   return {
+    babelnetId: ve.ce.easyLinkAnnotation.static.getBabelnetId(model),
     title: ve.ce.easyLinkAnnotation.static.getTitle(model),
     gloss: ve.ce.easyLinkAnnotation.static.getGloss(model),
     glossSource: ve.ce.easyLinkAnnotation.static.getGlossSource(model),

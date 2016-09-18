@@ -128,6 +128,10 @@ ve.ui.easyLinkDialog.prototype.initialize = function() {
     }
   } );
   this.selectDomains.getMenu().selectItemByData( 'ALL' );
+  this.layoutSelectDomains =  new OO.ui.FieldLayout(this.selectDomains,{
+    align: 'top',
+    label: 'Dominio:'
+  });
   this.layoutSelect = new OO.ui.FieldLayout(this.buttonSelectWidget,
     {
       align: 'top',
@@ -152,13 +156,13 @@ ve.ui.easyLinkDialog.prototype.initialize = function() {
   });
   this.inputSetLayout = new OO.ui.FieldsetLayout;
   this.inputSetLayout.addItems([
-    this.layoutSelect, this.layoutNumberInput
+    this.layoutSelect, this.layoutNumberInput, this.layoutSelectDomains
   ]);
 
   this.layoutProgress.toggle(false);
 
   /* Add elements to the panels */
-  this.panelIntro.$element.append(OO.ui.deferMsg('easylink-ve-dialog-intro-text'), this.inputSetLayout.$element, this.selectDomains.$element);
+  this.panelIntro.$element.append(OO.ui.deferMsg('easylink-ve-dialog-intro-text'), this.inputSetLayout.$element);
   this.panelResults.$element.append(this.layoutProgress.$element);
   this.panelHelp.$element.append(OO.ui.deferMsg('easylink-ve-dialog-help-text'));
   /* Add panels to StackLayout */
@@ -229,6 +233,7 @@ ve.ui.easyLinkDialog.prototype.showResults = function(results) {
   var dialog = this;
   dialog.layoutProgress.toggle(false);
   ve.dm.easyLinkAnnotation.static.annotationsList = [];
+  ve.dm.easyLinkAnnotation.static.availableAnnotationsMap = {};
   if(Array.isArray(results)){
     dialog.processResultsArray(results);
   }else {

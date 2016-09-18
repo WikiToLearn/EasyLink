@@ -219,10 +219,23 @@ ve.ui.easyLinkContextItem.prototype.onNextButtonClick = function(){
 */
 ve.ui.easyLinkContextItem.prototype.getDescription = function() {
   var descriptionObj = ve.ce.easyLinkAnnotation.static.getDescription(this.model);
-  var description = "<p><strong>"
-  + descriptionObj.title.toUpperCase()
-  + ":</strong></p><p>"
-  + descriptionObj.gloss
+  var description = "<p><strong>" + descriptionObj.title.toUpperCase();
+  var currentAnnotationIndex;
+  if(Object.keys(ve.dm.easyLinkAnnotation.static.availableAnnotationsMap).length !== 0){
+    var availableAnnotationsList = ve.dm.easyLinkAnnotation.static.availableAnnotationsMap[descriptionObj.title];
+    for (var i = 0; i < availableAnnotationsList.length; i++) {
+      if(availableAnnotationsList[i].getBabelnetId() === descriptionObj.babelnetId){
+        currentAnnotationIndex = i + 1;
+        description += " (" + currentAnnotationIndex
+        + " " + OO.ui.msg('easylink-ve-contextitem-of')
+        + " " + availableAnnotationsList.length+ "):</strong></p><p>";
+        break;
+      }
+    }
+  }else {
+    description += ":</strong></p><p>";
+  }
+  description += descriptionObj.gloss
   + "</p><p>"
   + OO.ui.msg('easylink-ve-dialog-gloss-source')
   + descriptionObj.glossSource
