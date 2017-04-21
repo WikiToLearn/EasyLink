@@ -342,7 +342,7 @@ ve.ui.easyLinkDialog.prototype.annotate = function(title, annotation){
     wholeWord: true
   });
   if(range.length > 0){
-    var transaction = ve.dm.Transaction.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
+    var transaction = ve.dm.TransactionBuilder.static.newFromAnnotation(veDmDocument, range[0], 'set', annotation);
     veDmDocument.commit(transaction, true);
     ve.dm.easyLinkAnnotation.static.annotationsList.push(annotation);
   }
